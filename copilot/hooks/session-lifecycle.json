@@ -1,0 +1,17 @@
+{
+  "version": 1,
+  "hooks": {
+    "sessionStart": [
+      {
+        "command": ".github/hooks/scripts/load-handoff-context.sh",
+        "timeout": 10
+      }
+    ],
+    "sessionEnd": [
+      {
+        "command": ".github/hooks/scripts/session-end-reminder.sh",
+        "timeout": 10
+      }
+    ]
+  }
+}

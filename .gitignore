@@ -1,0 +1,12 @@
+# Claude Code session artifacts
+.claude/session-logs/*.md
+!.claude/session-logs/.gitkeep
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Editor artifacts
+*.swp
+*.swo
+*~
