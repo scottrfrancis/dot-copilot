@@ -58,6 +58,7 @@ Auto-applied by Copilot based on `applyTo` glob patterns in YAML frontmatter.
 | [shell-escaping](copilot/instructions/shell-escaping.instructions.md) | `*.sh`, `*.bash`, `Dockerfile` | Shell quoting, TTY handling |
 | [c4-diagramming](copilot/instructions/c4-diagramming.instructions.md) | `*.puml`, `*.plantuml` | C4 Model PlantUML organization |
 | [markdown-formatting](copilot/instructions/markdown-formatting.instructions.md) | `*.md` | Spacing and formatting standards |
+| [testing](copilot/instructions/testing.instructions.md) | `*.test.*`, `*.spec.*`, test dirs | Test pyramid, mocking, CI integration |
 
 ### Agents (Custom Agents)
 
@@ -72,6 +73,8 @@ Invoked from the Copilot agent dropdown. Ported from Claude Code commands.
 | [arch-review](copilot/agents/arch-review.md) | Principal Architect review against industry frameworks |
 | [autocommit](copilot/agents/autocommit.md) | AI-powered conventional commit message generation |
 | [checkpoint-progress](copilot/agents/checkpoint-progress.md) | WIP commit and session state preservation |
+| [review-pr](copilot/agents/review-pr.md) | PR code review: bugs, security, missing tests, style |
+| [babysit-pr](copilot/agents/babysit-pr.md) | Monitor a PR for checks, reviews, and merge readiness |
 
 ### Hooks
 
