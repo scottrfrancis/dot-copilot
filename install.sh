@@ -121,12 +121,19 @@ link_directory "${SOURCE_DIR}/hooks" "${GITHUB_DIR}/hooks"
 
 echo ""
 
-# --- Session logs directory ---
+# --- Session logs directories ---
 
-SESSION_LOGS_DIR="${TARGET_DIR}/.claude/session-logs"
-if [[ ! -d "$SESSION_LOGS_DIR" ]]; then
-  mkdir -p "$SESSION_LOGS_DIR"
-  echo "Created session logs directory: .claude/session-logs/"
+# Shared cross-tool location (primary)
+if [[ ! -d "${TARGET_DIR}/session-logs" ]]; then
+  mkdir -p "${TARGET_DIR}/session-logs"
+  touch "${TARGET_DIR}/session-logs/.gitkeep"
+  echo "Created session logs directory: session-logs/ (shared cross-tool)"
+fi
+
+# Legacy location (for backwards compatibility with older handoffs)
+if [[ ! -d "${TARGET_DIR}/.claude/session-logs" ]]; then
+  mkdir -p "${TARGET_DIR}/.claude/session-logs"
+  echo "Created legacy session logs directory: .claude/session-logs/"
 fi
 
 # --- Summary ---

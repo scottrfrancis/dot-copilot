@@ -6,14 +6,14 @@ tools: ["executeCommand", "readFile", "editFile", "searchFiles", "listDirectory"
 
 # Session Logger
 
-Create a comprehensive session summary and save it to `.claude/session-logs/` with proper organization.
+Create a comprehensive session summary and save it to the shared cross-tool session logs directory.
 
 ## Setup
 
-Create the session logs directory if it doesn't exist:
+Create the logs directory if it doesn't exist. Prefer `session-logs/` (shared cross-tool location); fall back to `.claude/session-logs/` if creation fails:
 
 ```bash
-mkdir -p .claude/session-logs
+mkdir -p session-logs 2>/dev/null || mkdir -p .claude/session-logs
 ```
 
 ## Gather Context
@@ -22,7 +22,7 @@ Review the conversation history to identify what was accomplished. Also check gi
 
 ## Link to Previous Session
 
-Find the most recent session log in `.claude/session-logs/` (excluding `mine-report-*` and `handoff-*` files). If found, add to the header:
+Find the most recent session log in `session-logs/` (then `.claude/session-logs/` as fallback), excluding `mine-report-*` and `handoff-*` files. If found, add to the header:
 
 ```markdown
 **Previous Session**: [filename](filename) — [one-line summary from that log's Summary section]
@@ -32,9 +32,19 @@ This creates a browsable chain across sessions. If no previous session log exist
 
 ## Generate Session Summary
 
-Save to: `.claude/session-logs/YYYY-MM-DD-HHMM${topic:+-$topic}.md`
+Save to: `session-logs/session-YYYY-MM-DD-HHMM[-topic].md` (or `.claude/session-logs/` if `session-logs/` is unavailable).
 
 ### Required Sections
+
+#### YAML Frontmatter (required for cross-tool compatibility)
+
+```markdown
+---
+tool: copilot
+timestamp: YYYY-MM-DDTHH:MM:SS-TZ
+branch: <current branch from git>
+---
+```
 
 #### Header
 

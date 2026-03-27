@@ -13,11 +13,17 @@ Analyze session logs to extract patterns, quantitative metrics, and actionable f
 Parse user input for:
 
 - `days:N` — Look back N days (default: 30)
-- `save` — Save the analysis report to `.claude/session-logs/mine-report-YYYY-MM-DD.md`
+- `save` — Save the analysis report to `session-logs/mine-report-YYYY-MM-DD.md`
 
 ## Step 1: Gather Data
 
-Read all `.md` files in `.claude/session-logs/` modified within the lookback period. Use file timestamps and `**Date**:` frontmatter. Count total sessions, list topics by filename keywords.
+Read all `.md` files modified within the lookback period from these locations (check all, merge results):
+
+1. `session-logs/` (shared cross-tool location)
+2. `.claude/session-logs/` (Copilot / Claude Code legacy location)
+3. `.factory/logs/` (Droid legacy location)
+
+If files have YAML frontmatter with a `tool:` field, track which tool generated each log — this enables per-tool metrics. Use file timestamps and `**Date**:` frontmatter. Count total sessions, list topics by filename keywords.
 
 ## Step 2: Session Metrics
 
@@ -48,7 +54,7 @@ Based on all analysis, generate prioritized recommendations:
 
 ## Step 5: Output
 
-Present the report with clear section headers and tables. If `save` was specified, write the full report to `.claude/session-logs/mine-report-YYYY-MM-DD.md`.
+Present the report with clear section headers and tables. If `save` was specified, write the full report to `session-logs/mine-report-YYYY-MM-DD.md` (fallback: `.claude/session-logs/mine-report-YYYY-MM-DD.md`).
 
 ## Rules
 
