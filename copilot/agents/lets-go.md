@@ -8,6 +8,16 @@ tools: ["executeCommand", "readFile", "searchFiles", "editFile", "listDirectory"
 
 Set initial context for a working session.
 
+## Load Handoff Context
+
+Check for recent handoff files across all tool locations (check all, take newest):
+
+1. `session-logs/` (shared cross-tool location)
+2. `.claude/session-logs/` (Copilot / Claude Code legacy location)
+3. `.factory/logs/` (Droid location)
+
+If a handoff from the last 7 days is found, read it and incorporate as session context. If the file has YAML frontmatter with a `tool:` field, note the source (e.g., "Continuing from a Droid session"). Report: "Loaded handoff from [filename] ([tool])" or "No recent handoff found".
+
 ## Review Project Documentation
 
 Review the project documentation including:
@@ -15,7 +25,6 @@ Review the project documentation including:
 - README
 - ARCHITECTURE.md (if present)
 - CONTRIBUTING.md (if present)
-- Session logs directory (verify auto-loaded handoff context; the sessionStart hook injects the most recent handoff automatically)
 - docs/
 - plans/
 - TODO

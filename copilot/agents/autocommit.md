@@ -10,32 +10,25 @@ Analyze the current git changes and generate a commit message following the Conv
 
 ## Process
 
-1. **Check git status**: Run `git status --porcelain` to see all changes
-2. **Analyze changes**: Run `git diff` and `git diff --cached` to understand what changed
-3. **Generate commit message** following this format:
+1. **Load conventions**: If `docs/guidelines/commits-and-branching.md` exists, read it for project-specific commit types, scopes, and conventions. Otherwise, use standard Conventional Commits.
+2. **Check git status**: Run `git status --porcelain` to see all changes
+3. **Analyze changes**: Run `git diff` and `git diff --cached` to understand what changed
+4. **Generate commit message** following this format:
 
 ```
-<type>[optional scope]: <description>
+type(scope): description
 
 [optional body]
 
-[optional footer(s)]
+[optional footer]
 ```
 
-Common types:
-- **feat**: A new feature
-- **fix**: A bug fix
-- **docs**: Documentation only changes
-- **style**: Changes that do not affect the meaning of the code
-- **refactor**: A code change that neither fixes a bug nor adds a feature
-- **perf**: A code change that improves performance
-- **test**: Adding missing tests or correcting existing tests
-- **build**: Changes that affect the build system or external dependencies
-- **ci**: Changes to CI configuration files and scripts
-- **chore**: Other changes that don't modify src or test files
+Types: `feat`, `fix`, `refactor`, `docs`, `test`, `build`, `ci`, `perf`, `style`, `chore`, `revert`
 
-4. **Show the proposed message** to the user for approval
-5. **Stage and commit** if approved:
+Use `feat` only for genuinely new capabilities. Enhancements to existing features are `refactor` or `fix`.
+
+5. **Show the proposed message** to the user for approval
+6. **Stage and commit** if approved:
    ```bash
    git add .
    git commit -m "<message>"
@@ -44,8 +37,9 @@ Common types:
 ## Rules
 
 - Keep the subject line under 72 characters
-- Use present tense and imperative mood
-- Don't capitalize the first letter after the colon
-- No period at the end of the subject line
+- Imperative mood, lowercase, no period: "add endpoint" not "Added endpoint."
+- Use project-specific scopes from `docs/guidelines/commits-and-branching.md` if available
 - Add a body for non-trivial changes explaining the "why"
+- Add `BREAKING CHANGE:` footer if the change breaks an API contract
+- Add `Refs: #N` or `ADO: #N` to reference issues/work items
 - Always show the proposed message before committing

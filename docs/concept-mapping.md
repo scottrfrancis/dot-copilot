@@ -113,11 +113,12 @@ This document maps every component of the `~/.claude/` configuration to its GitH
 
 ## Session Management
 
-| Claude Code | Copilot | Notes |
+| Aspect | Primary Location | Notes |
 |---|---|---|
-| `.claude/session-logs/` | `.claude/session-logs/` | Same directory — shared between both tools |
-| `handoff-*.md` format | Same format | Hooks look for same file pattern |
-| `MEMORY.md` | No built-in equivalent | Can use `.github/context/` directory |
+| Session logs | `session-logs/` (project root) | Shared across all tools: Cursor, Droid, Copilot, Claude Code |
+| Legacy location | `.claude/session-logs/` | Legacy fallback — tools should check here if `session-logs/` is empty |
+| `handoff-*.md` format | Same format in both locations | Hooks look for same file pattern |
+| `MEMORY.md` | `.claude/memory/MEMORY.md` | No built-in Copilot equivalent. Can use `.github/context/` directory |
 | Auto-memory directory | No equivalent | Must be managed manually |
 
 ## Permissions

@@ -92,9 +92,10 @@ dot-copilot/
 ├── README.md                    # This file
 ├── CLAUDE.md                    # For developing this project with Claude Code
 ├── install.sh                   # Symlink installer
+├── session-logs/                # Cross-tool session logs (Cursor, Droid, Copilot, Claude Code)
 ├── .claude/                     # Claude Code project setup (Tier 1)
 │   ├── memory/MEMORY.md
-│   └── session-logs/
+│   └── session-logs/            # LEGACY — use session-logs/ at project root instead
 ├── copilot/                     # THE DELIVERABLE — portable Copilot config
 │   ├── copilot-instructions.md  # Global behavioral rules
 │   ├── instructions/            # Path-scoped guidelines (9 files)

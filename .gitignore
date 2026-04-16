@@ -1,4 +1,8 @@
-# Claude Code session artifacts
+# Cross-tool session logs (primary location)
+session-logs/*.md
+!session-logs/.gitkeep
+
+# Claude Code session artifacts (legacy location)
 .claude/session-logs/*.md
 !.claude/session-logs/.gitkeep
 

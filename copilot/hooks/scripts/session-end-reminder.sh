@@ -28,8 +28,12 @@ if [[ "$TOTAL_CHANGES" -lt 3 ]]; then
 fi
 
 # --- Check 1: Session log reminder ---
-# Look for a session log created in the last 2 hours (excluding handoff and mine-report files)
-RECENT_LOG=$(find .claude/session-logs -name "*.md" ! -name "handoff-*" ! -name "mine-report-*" -mmin -120 -type f 2>/dev/null | head -1 || true)
+# Look for a session log created in the last 2 hours (check shared + legacy locations)
+RECENT_LOG=""
+for log_dir in session-logs .claude/session-logs; do
+  RECENT_LOG=$(find "$log_dir" -name "session-*.md" -mmin -120 -type f 2>/dev/null | head -1 || true)
+  [[ -n "$RECENT_LOG" ]] && break
+done
 
 if [[ -z "$RECENT_LOG" ]]; then
   echo "Session reminder: ${TOTAL_CHANGES} files changed but no session log created. Consider using the session-logger agent." >&2
@@ -37,7 +41,11 @@ fi
 
 # --- Check 2: Handoff reminder ---
 if [[ "$TOTAL_CHANGES" -ge 5 ]]; then
-  RECENT_HANDOFF=$(find .claude/session-logs -name "handoff-*.md" -mmin -120 -type f 2>/dev/null | head -1 || true)
+  RECENT_HANDOFF=""
+  for log_dir in session-logs .claude/session-logs; do
+    RECENT_HANDOFF=$(find "$log_dir" -name "handoff-*.md" -mmin -120 -type f 2>/dev/null | head -1 || true)
+    [[ -n "$RECENT_HANDOFF" ]] && break
+  done
 
   if [[ -z "$RECENT_HANDOFF" ]]; then
     echo "Handoff reminder: ${TOTAL_CHANGES} files changed. Consider using the handoff agent to preserve context for the next session." >&2
