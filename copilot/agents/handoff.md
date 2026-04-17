@@ -17,6 +17,31 @@ Generate a continuation prompt capturing current session state for the next sess
 5. Check for project-specific tracking files referenced in project instructions or memory files
 6. Check for recent session logs (`session-logs/` then `.claude/session-logs/`) for additional context
 
+## Dot-Repo Sync Check (dot-copilot)
+
+Before generating the handoff, verify the dot-copilot config repo is in sync with its GitHub origin. This is consistent with `lets-go` and `session-logger`.
+
+1. **Locate the dot-copilot clone**:
+
+   ```bash
+   DOT_COPILOT=""
+   for marker in .github/copilot-instructions.md .github/instructions/conventional-commits.instructions.md; do
+     [[ -L "$marker" ]] || continue
+     REAL=$(readlink -f "$marker" 2>/dev/null) || continue
+     DIR="$(dirname "$REAL")"
+     while [[ "$DIR" != "/" && ! -d "$DIR/.git" ]]; do DIR="$(dirname "$DIR")"; done
+     [[ -d "$DIR/.git" ]] && DOT_COPILOT="$DIR" && break
+   done
+   ```
+
+2. **If located**, run the drift check and alert prominently if out of sync. Note the state in the `## Blockers / Risks` section of the handoff if drift is detected:
+
+   - **Behind**: "⚠ dot-copilot is {N} commits behind origin — your global agents/instructions may be stale. Consider `git -C $DOT_COPILOT pull`."
+   - **Ahead**: "dot-copilot has {N} unpushed commits — consider pushing to back up your config."
+   - **Dirty**: "dot-copilot has uncommitted changes."
+
+3. **If not located**, skip silently.
+
 ## Generate Continuation Prompt
 
 Write to `session-logs/handoff-YYYY-MM-DD-HHMM.md` using the current date and time. If `session-logs/` does not exist, create it. If creation fails, fall back to `.claude/session-logs/`.

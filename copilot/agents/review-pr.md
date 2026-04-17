@@ -8,6 +8,16 @@ tools: ["executeCommand", "readFile", "searchFiles", "listDirectory"]
 
 Review a pull request for bugs, security issues, missing tests, and code quality.
 
+## Step 0 — Invoke `/ultrareview` (REQUIRED)
+
+Before doing anything else, you MUST explicitly invoke the `/ultrareview` slash command (available on Claude 4.7+ models) to run Claude's specialized bug-hunting reviewer fleet against the changed files. This is non-optional — `/ultrareview` is the primary source of findings for this review; the manual checklist in later steps is a supplement, not a replacement.
+
+- Run `/ultrareview` and wait for it to complete.
+- Capture the findings it produces.
+- Treat any HIGH/critical items it surfaces as required review items.
+
+If `/ultrareview` is unavailable in the current environment (e.g., the host model/client doesn't expose the slash command), say so explicitly in the final review output and continue with the manual checklist below.
+
 ## Step 1 — Resolve the diff
 
 Determine what to review based on user input:
@@ -54,7 +64,7 @@ Evaluate the diff against each category. Only report findings — skip categorie
 
 ## Step 4 — Output the review
 
-Format as a PR review comment. Group findings by file.
+Format as a PR review comment. Group findings by file. **Merge findings from `/ultrareview` (Step 0) with findings from the manual checklist (Step 3)**, deduplicating and prefixing each finding's source as `[ultrareview]` or `[manual]` in the Finding column where helpful.
 
 ```
 ## PR Review: <title or branch>
