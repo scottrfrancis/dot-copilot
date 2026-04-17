@@ -20,6 +20,31 @@ mkdir -p session-logs 2>/dev/null || mkdir -p .claude/session-logs
 
 Review the conversation history to identify what was accomplished. Also check git status and recent commits for file changes.
 
+## Dot-Repo Sync Check (dot-copilot)
+
+As part of end-of-session hygiene, verify the dot-copilot config repo is in sync with its GitHub origin. This is consistent with `lets-go` and `handoff`.
+
+1. **Locate the dot-copilot clone**:
+
+   ```bash
+   DOT_COPILOT=""
+   for marker in .github/copilot-instructions.md .github/instructions/conventional-commits.instructions.md; do
+     [[ -L "$marker" ]] || continue
+     REAL=$(readlink -f "$marker" 2>/dev/null) || continue
+     DIR="$(dirname "$REAL")"
+     while [[ "$DIR" != "/" && ! -d "$DIR/.git" ]]; do DIR="$(dirname "$DIR")"; done
+     [[ -d "$DIR/.git" ]] && DOT_COPILOT="$DIR" && break
+   done
+   ```
+
+2. **If located**, run the drift check and alert prominently if out of sync. Note the state in the `## Session Effectiveness` section under `Process friction` if drift is detected:
+
+   - **Behind**: "⚠ dot-copilot is {N} commits behind origin — your global agents/instructions may be stale. Consider `git -C $DOT_COPILOT pull`."
+   - **Ahead**: "dot-copilot has {N} unpushed commits — consider pushing to back up your config."
+   - **Dirty**: "dot-copilot has uncommitted changes."
+
+3. **If not located**, skip silently.
+
 ## Link to Previous Session
 
 Find the most recent session log in `session-logs/` (then `.claude/session-logs/` as fallback), excluding `mine-report-*` and `handoff-*` files. If found, add to the header:
