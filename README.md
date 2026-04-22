@@ -47,18 +47,39 @@ The base config knows nothing about any specific project — projects extend it.
 
 Auto-applied by Copilot based on `applyTo` glob patterns in YAML frontmatter.
 
+**Behavior rules** (always apply):
+
+| Instruction | Purpose |
+|---|---|
+| [conventional-commits](copilot/instructions/conventional-commits.instructions.md) | Standardized `type(scope): description` commit format |
+| [karpathy-principles](copilot/instructions/karpathy-principles.instructions.md) | Surface assumptions before implementing; match existing style |
+| [prototype-hygiene](copilot/instructions/prototype-hygiene.instructions.md) | Config over code; docs describe current state; PRs over branches |
+| [session-safety](copilot/instructions/session-safety.instructions.md) | Prevent session hangs on hardware/NPU/GPU systems |
+| [security-hardening](copilot/instructions/security-hardening.instructions.md) | Breach-driven web security audit, auth hardening, tenant isolation |
+
+**Language/file-scoped**:
+
 | Instruction | Applies To | Purpose |
 |---|---|---|
-| [shell-scripts](copilot/instructions/shell-scripts.instructions.md) | `*.sh`, `*.bash`, `Makefile` | Directory management, error handling, portability |
-| [conventional-commits](copilot/instructions/conventional-commits.instructions.md) | all files | Standardized commit message format |
+| [ai-patterns](copilot/instructions/ai-patterns.instructions.md) | `*.py`, `*.ts`, `*.js` | LLM integration patterns |
+| [C4-diagramming](copilot/instructions/C4-diagramming.instructions.md) | `*.puml`, `*.plantuml` | C4 Model PlantUML organization |
+| [golang](copilot/instructions/golang.instructions.md) | `*.go`, `go.mod`, `go.sum` | Go JSON safety, gosec patterns, G104 triage |
+| [markdown-formatting](copilot/instructions/markdown-formatting.instructions.md) | `*.md`, `*.mdx` | Spacing and formatting standards |
+| [prose-style](copilot/instructions/prose-style.instructions.md) | `*.md`, `*.mdx` | Anti-AI-smell rules for narrative prose |
 | [readme-documentation](copilot/instructions/readme-documentation.instructions.md) | `*.md` | README as central documentation hub |
-| [session-safety](copilot/instructions/session-safety.instructions.md) | all files | Prevent session hangs on hardware systems |
-| [ai-patterns](copilot/instructions/ai-patterns.instructions.md) | `*.py`, `*.ts`, `*.js`, AI files | LLM integration patterns |
-| [project-setup](copilot/instructions/project-setup.instructions.md) | config files | Tiered project bootstrapping checklist |
 | [shell-escaping](copilot/instructions/shell-escaping.instructions.md) | `*.sh`, `*.bash`, `Dockerfile` | Shell quoting, TTY handling |
-| [c4-diagramming](copilot/instructions/c4-diagramming.instructions.md) | `*.puml`, `*.plantuml` | C4 Model PlantUML organization |
-| [markdown-formatting](copilot/instructions/markdown-formatting.instructions.md) | `*.md` | Spacing and formatting standards |
-| [testing](copilot/instructions/testing.instructions.md) | `*.test.*`, `*.spec.*`, test dirs | Test pyramid, mocking, CI integration |
+| [shell-scripts](copilot/instructions/shell-scripts.instructions.md) | `*.sh`, `*.bash`, `Makefile` | Directory management, error handling |
+| [testing](copilot/instructions/testing.instructions.md) | `*.test.*`, `*.spec.*`, test dirs | Test pyramid, TDD, mocking |
+
+**Workflow-scoped**:
+
+| Instruction | Applies To | Purpose |
+|---|---|---|
+| [ci-local-parity](copilot/instructions/ci-local-parity.instructions.md) | `.github/workflows/**` | Run every CI command locally before pushing |
+| [docx-conversion](copilot/instructions/docx-conversion.instructions.md) | `*.py`, `md-to-docx*` | python-docx over pandoc; color, typography, hyperlinks |
+| [md2pdf](copilot/instructions/md2pdf.instructions.md) | md2pdf workflows | Markdown → PDF conversion workflow |
+| [pr-token-tracking](copilot/instructions/pr-token-tracking.instructions.md) | PR creation | Include AI token usage in PR descriptions |
+| [project-setup](copilot/instructions/project-setup.instructions.md) | config files | Tiered project bootstrapping checklist |
 
 ### Agents (Custom Agents)
 
@@ -92,14 +113,15 @@ dot-copilot/
 ├── README.md                    # This file
 ├── CLAUDE.md                    # For developing this project with Claude Code
 ├── install.sh                   # Symlink installer
+├── bin/
+│   └── sync-from-dot-claude.sh  # Propagate ~/.claude/guidelines/ edits to copilot/instructions/
 ├── session-logs/                # Cross-tool session logs (Cursor, Droid, Copilot, Claude Code)
 ├── .claude/                     # Claude Code project setup (Tier 1)
-│   ├── memory/MEMORY.md
-│   └── session-logs/            # LEGACY — use session-logs/ at project root instead
+│   └── memory/MEMORY.md
 ├── copilot/                     # THE DELIVERABLE — portable Copilot config
 │   ├── copilot-instructions.md  # Global behavioral rules
-│   ├── instructions/            # Path-scoped guidelines (9 files)
-│   ├── agents/                  # Custom agents (7 files)
+│   ├── instructions/            # Path-scoped guidelines (18 files)
+│   ├── agents/                  # Custom agents (9 files)
 │   └── hooks/                   # Hook config + scripts
 │       ├── session-lifecycle.json
 │       └── scripts/
@@ -107,6 +129,22 @@ dot-copilot/
     ├── concept-mapping.md       # Claude Code ↔ Copilot mapping
     └── limitations.md           # What can't be ported
 ```
+
+## Self-contained by design
+
+`copilot/` contains all the content shipped by this repo. A Copilot-only user can clone dot-copilot and run `./install.sh /path/to/project` with no external dependencies — no `~/.claude/` checkout required. The installer uses symlinks by default, so updates in this repo propagate automatically to every linked project.
+
+## Syncing edits from dot-claude
+
+If you author rule content in [`~/.claude/guidelines/`](https://github.com/scottrfrancis/dot-claude) and want to propagate edits into this repo's instructions:
+
+```bash
+./bin/sync-from-dot-claude.sh --dry-run   # preview which instructions would change
+./bin/sync-from-dot-claude.sh             # apply — writes bodies into copilot/instructions/
+git diff copilot/instructions/            # review before committing
+```
+
+The sync script preserves each instruction's existing frontmatter (`description:` and `applyTo:`) and replaces only the body. New guidelines with no matching instruction are reported as warnings; create the instruction file manually first with an appropriate `applyTo:` glob before re-running.
 
 ## Origin
 
