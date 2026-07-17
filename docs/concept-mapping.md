@@ -59,7 +59,7 @@ commands you run; this kit ships none, by design.)
 | `commit-manual` (bash) | Conventional commits instruction covers this |
 | `session-cleanup` (bash) | Hardware-specific, not portable |
 | `validate-hw-env` (bash) | Hardware-specific, not portable |
-| `extract-adr` (YAML) | Low usage, can be added later |
+| `extract-adr` (YAML) | Ported → `/adr` prompt (create or extract an ADR); format defined by the `adr` instruction |
 
 ### Invocation Differences
 

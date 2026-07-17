@@ -82,6 +82,7 @@ Auto-applied by Copilot based on `applyTo` glob patterns in YAML frontmatter.
 
 | Instruction | Applies To | Purpose |
 |---|---|---|
+| [adr](copilot/instructions/adr.instructions.md) | `docs/decisions/**`, `docs/adr/**`, `ADR-*.md` | Canonical ADR format: location, numbering, status lifecycle, traceability links |
 | [ci-local-parity](copilot/instructions/ci-local-parity.instructions.md) | `.github/workflows/**` | Run every CI command locally before pushing |
 | [docx-conversion](copilot/instructions/docx-conversion.instructions.md) | `*.py`, `md-to-docx*` | python-docx over pandoc; color, typography, hyperlinks |
 | [md2pdf](copilot/instructions/md2pdf.instructions.md) | md2pdf workflows | Markdown → PDF conversion workflow |
@@ -122,6 +123,7 @@ a dropdown persona you switch into; the kit ships no custom modes by design.
 | [/constitution](copilot/prompts/constitution.prompt.md) | Generate CONSTITUTION.md + WORKFLOWS.md (principles, Definition of Done, quality gates) |
 | [/assumptions](copilot/prompts/assumptions.prompt.md) | Track hypothesis-driven assumptions (if-true/if-false/fallback) in ASSUMPTIONS-TRACKER.md |
 | [/gherkin](copilot/prompts/gherkin.prompt.md) | Draft Gherkin acceptance scenarios from a requirement or FR-### |
+| [/adr](copilot/prompts/adr.prompt.md) | Write an ADR in the canonical format — from a described decision or extracted from a session log |
 
 The `/recover`, `/observe`, `/report` commands pair with the **tokometer field kit** — the
 Copilot-in-VS-Code collectors and reports in the [tokometer](https://github.com/scottrfrancis/coder)
