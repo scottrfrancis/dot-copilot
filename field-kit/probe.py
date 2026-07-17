@@ -31,6 +31,8 @@ BUNDLE_MANIFEST = [
     "copilot/instructions",
     "copilot/prompts",
     "install-laptop.sh",
+    "install-into-project.ps1",
+    "INSTALL.md",
     "RUNBOOK.md",
     "PROBE-RESULTS.md",
     "USING-COPILOT.md",

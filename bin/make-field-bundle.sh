@@ -53,6 +53,7 @@ cp -R "$REPO_DIR/copilot" "$KIT/copilot"
 # field-kit docs, probe, installer, laptop env
 cp "$REPO_DIR/field-kit/probe.py" "$REPO_DIR/field-kit/PROBE-RESULTS.md" \
    "$REPO_DIR/field-kit/RUNBOOK.md" "$REPO_DIR/field-kit/USING-COPILOT.md" \
+   "$REPO_DIR/field-kit/INSTALL.md" "$REPO_DIR/field-kit/install-into-project.ps1" \
    "$REPO_DIR/field-kit/install-laptop.sh" "$KIT/"
 cp "$REPO_DIR/field-kit/BOOTSTRAP.md" "$KIT/"      # reference copy inside the zip too
 cp "$REPO_DIR/field-kit/tokometer.env" "$KIT/tokometer/tokometer.env"
@@ -105,13 +106,13 @@ cat <<PSHEAD
          powershell -ExecutionPolicy Bypass -File .\\$NAME.ps1
        (If Windows flagged it as from-the-internet:  Unblock-File .\\$NAME.ps1  first.)
 
-  It decodes + verifies + unzips locally into %USERPROFILE%\\field-kit.
+  It decodes + verifies + unzips into the CURRENT folder (creates .\\field-kit\\).
   Nothing leaves the machine. Then follow field-kit\\BOOTSTRAP.md from step 2.
 #>
 \$ErrorActionPreference = 'Stop'
 \$Name           = '$NAME'
 \$ExpectedZipSha = '$ZIP_SHA'
-\$Dest           = Join-Path \$env:USERPROFILE 'field-kit'
+\$Dest           = (Get-Location).Path
 \$ZipPath        = Join-Path \$env:TEMP "\$Name.zip"
 
 Write-Host "Decoding \$Name ..."
@@ -138,11 +139,16 @@ Remove-Item $ZipPath -ErrorAction SilentlyContinue
 $KitDir = Join-Path $Dest 'field-kit'
 Write-Host ""
 Write-Host "Extracted to $KitDir"
-Write-Host "Next:"
-Write-Host "  cd `"$KitDir`""
-Write-Host "  python probe.py           # read-only environment check"
-Write-Host "  bash install-laptop.sh    # install the tokometer instrumentation (Git Bash)"
-Write-Host "Then read USING-COPILOT.md (once) and RUNBOOK.md (daily). See BOOTSTRAP.md."
+Write-Host ""
+Write-Host "Next (see field-kit\BOOTSTRAP.md for the full walk-through):"
+Write-Host "  1. cd `"$KitDir`"  then  python probe.py        # read-only environment check"
+Write-Host "  2. bash install-laptop.sh                        # tokometer instrumentation (Git Bash)"
+Write-Host "  3. Install the /commands + instructions into a project's .github\ — two ways:"
+Write-Host "     * PROMPT (handles a non-empty .github with judgment): open the target project"
+Write-Host "       in VS Code and paste field-kit\INSTALL.md into Copilot Chat."
+Write-Host "     * SCRIPT (deterministic): .\install-into-project.ps1 -Project <path-to-repo>"
+Write-Host ""
+Write-Host "Read USING-COPILOT.md once, RUNBOOK.md daily."
 PSFOOT
 } > "$PS1_TXT"
 

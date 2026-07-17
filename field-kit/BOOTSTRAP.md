@@ -54,20 +54,43 @@ bash ~/.tokometer/harvest.sh
 python ~/.tokometer/report_copilot.py
 ```
 
-## 4. Install the Copilot config into your working project
+## 4. Install the Copilot config into your working project (.github may not be empty)
 
-Copy (not symlink — keeps it simple on Windows) into the project you work in:
+Two ways — both safe for a project whose `.github/` already has content. **Pick one.**
 
-```bash
-cp -r ~/field-kit/copilot/copilot-instructions.md  <project>/.github/copilot-instructions.md
-cp -r ~/field-kit/copilot/instructions             <project>/.github/instructions
-cp -r ~/field-kit/copilot/prompts                   <project>/.github/prompts
+### Option A — let Copilot do it (recommended; handles merges with judgment)
+
+Best when the target project already has its own `.github/copilot-instructions.md` or
+instructions you don't want clobbered.
+
+1. Open the **target project** in VS Code.
+2. Make the expanded kit reachable in that workspace — simplest is to run the
+   self-extracting `.ps1` from the project root so `field-kit\` lands inside it (or
+   copy the extracted `field-kit\` folder into the project).
+3. Open `field-kit/INSTALL.md`, copy its contents, paste into **Copilot Chat**, send.
+
+Copilot surveys the existing `.github/`, merges the kit in file-by-file, reconciles an
+existing `copilot-instructions.md` with your approval, and never overwrites without
+showing you a diff first. It works in Manual mode — approve each step.
+
+### Option B — deterministic script (no Copilot turns)
+
+From the extracted field-kit folder:
+
+```powershell
+.\install-into-project.ps1 -Project C:\path\to\your\repo
+.\install-into-project.ps1 -Project ..\repo -DryRun   # preview, writes nothing
 ```
 
-Reload VS Code. The instructions apply automatically; the rituals are **runnable
-commands** — in the Copilot Chat box type `/lets-go`, `/handoff`, `/recover`,
-`/report`, `/observe`, … (add arguments after the name), press Enter, and it runs
-inline. No dropdown, no mode-switching.
+It merges into `.github\`, backs up any conflicting file to `<name>.bak.<timestamp>`,
+and refuses to overwrite an existing `copilot-instructions.md` (drops the kit's copy as
+`copilot-instructions.base.md` for you to merge). It reports everything it backed up.
+
+### Either way
+
+Reload VS Code. Instructions apply automatically; the rituals are **runnable commands** —
+type `/lets-go`, `/handoff`, `/recover`, `/report`, `/observe` … in the Chat box (args
+after the name), press Enter, runs inline. No dropdown, no mode-switching.
 
 ## 5. Live with it
 
