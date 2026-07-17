@@ -52,7 +52,8 @@ cp -R "$REPO_DIR/copilot" "$KIT/copilot"
 
 # field-kit docs, probe, installer, laptop env
 cp "$REPO_DIR/field-kit/probe.py" "$REPO_DIR/field-kit/PROBE-RESULTS.md" \
-   "$REPO_DIR/field-kit/RUNBOOK.md" "$REPO_DIR/field-kit/install-laptop.sh" "$KIT/"
+   "$REPO_DIR/field-kit/RUNBOOK.md" "$REPO_DIR/field-kit/USING-COPILOT.md" \
+   "$REPO_DIR/field-kit/install-laptop.sh" "$KIT/"
 cp "$REPO_DIR/field-kit/BOOTSTRAP.md" "$KIT/"      # reference copy inside the zip too
 cp "$REPO_DIR/field-kit/tokometer.env" "$KIT/tokometer/tokometer.env"
 

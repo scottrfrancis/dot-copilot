@@ -33,6 +33,7 @@ BUNDLE_MANIFEST = [
     "install-laptop.sh",
     "RUNBOOK.md",
     "PROBE-RESULTS.md",
+    "USING-COPILOT.md",
 ]
 
 

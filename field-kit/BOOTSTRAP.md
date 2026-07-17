@@ -77,7 +77,11 @@ the Copilot agent dropdown; the instructions apply automatically.
 
 ## 5. Live with it
 
-Open `RUNBOOK.md` — the daily/weekly ritual, in ten lines. Day one is just: work
-normally, and at end of session run `harvest.sh` + the report.
+Two documents, two purposes:
+
+- **`USING-COPILOT.md`** — read once, first day: how your Claude workflow maps onto
+  Copilot here (session rituals, what doesn't port, working with the Auto router).
+- **`RUNBOOK.md`** — the daily/weekly ritual, in ten lines. Day one is just: work
+  normally, and at end of session run `harvest.sh` + the report.
 
 *Everything collected stays on this machine. Nothing phones home.*
