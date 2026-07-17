@@ -148,7 +148,6 @@ dot-copilot/
 ├── CLAUDE.md                    # For developing this project with Claude Code
 ├── install.sh                   # Symlink installer
 ├── bin/
-│   ├── sync-from-dot-claude.sh  # Propagate ~/.claude/guidelines/ edits to copilot/instructions/
 │   └── make-field-bundle.sh     # Assemble the email-transferable field kit (zip → b64 chunks)
 ├── field-kit/                   # Locked-down-laptop kit: probe, BOOTSTRAP/RUNBOOK, installer
 ├── plans/                       # Field-kit program: GOALS.md + PLAN.md (probe results inside)
@@ -169,23 +168,13 @@ dot-copilot/
 
 ## Self-contained by design
 
-`copilot/` contains all the content shipped by this repo. A Copilot-only user can clone dot-copilot and run `./install.sh /path/to/project` with no external dependencies — no `~/.claude/` checkout required. The installer uses symlinks by default, so updates in this repo propagate automatically to every linked project.
+`copilot/` contains all the content shipped by this repo — it is **self-contained and authoritative**. Clone dot-copilot and run `./install.sh /path/to/project` with **no external dependencies**: no `~/.claude/`, no `dot-claude` checkout, nothing fetched at install or runtime. The installer uses symlinks by default, so updates in this repo propagate automatically to every linked project.
 
-## Syncing edits from dot-claude
-
-If you author rule content in [`~/.claude/guidelines/`](https://github.com/scottrfrancis/dot-claude) and want to propagate edits into this repo's instructions:
-
-```bash
-./bin/sync-from-dot-claude.sh --dry-run   # preview which instructions would change
-./bin/sync-from-dot-claude.sh             # apply — writes bodies into copilot/instructions/
-git diff copilot/instructions/            # review before committing
-```
-
-The sync script preserves each instruction's existing frontmatter (`description:` and `applyTo:`) and replaces only the body. New guidelines with no matching instruction are reported as warnings; create the instruction file manually first with an appropriate `applyTo:` glob before re-running.
+Author and edit rule content **here**, in `copilot/instructions/` and `copilot/prompts/`. This repo is not a downstream mirror of any other — there is no upstream to sync from. (Content is periodically *shared* across sibling config repos — dot-claude, dot-cursor, dot-droid, dot-opencode — but that is a manual, bidirectional harvest, not a build-time dependency in any direction.)
 
 ## Origin
 
-This configuration is ported from a `~/.claude/` setup for Claude Code. See [docs/concept-mapping.md](docs/concept-mapping.md) for the full mapping between the two systems and [docs/limitations.md](docs/limitations.md) for what couldn't be ported.
+The format is modeled on a `~/.claude/` Claude Code setup; the `~/.claude/` names in [docs/concept-mapping.md](docs/concept-mapping.md) are a conceptual equivalence for readers coming from Claude Code, not a runtime link. See [docs/limitations.md](docs/limitations.md) for what Copilot can't express.
 
 ## Session Lifecycle
 
