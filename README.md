@@ -52,6 +52,8 @@ Auto-applied by Copilot based on `applyTo` glob patterns in YAML frontmatter.
 | Instruction | Purpose |
 |---|---|
 | [conventional-commits](copilot/instructions/conventional-commits.instructions.md) | Standardized `type(scope): description` commit format |
+| [copilot-auto-tactics](copilot/instructions/copilot-auto-tactics.instructions.md) | Auto-router tactics: signal complexity, plan before tools, never fragment a failing ask |
+| [context-hygiene](copilot/instructions/context-hygiene.instructions.md) | Handoff→clear→pickup at half context; small per-turn payloads; OOM-aware habits |
 | [karpathy-principles](copilot/instructions/karpathy-principles.instructions.md) | Surface assumptions before implementing; match existing style |
 | [prototype-hygiene](copilot/instructions/prototype-hygiene.instructions.md) | Config over code; docs describe current state; PRs over branches |
 | [session-safety](copilot/instructions/session-safety.instructions.md) | Prevent session hangs on hardware/NPU/GPU systems |
@@ -96,6 +98,15 @@ Invoked from the Copilot agent dropdown. Ported from Claude Code commands.
 | [checkpoint-progress](copilot/agents/checkpoint-progress.md) | WIP commit and session state preservation |
 | [review-pr](copilot/agents/review-pr.md) | PR code review: bugs, security, missing tests, style |
 | [babysit-pr](copilot/agents/babysit-pr.md) | Monitor a PR for checks, reviews, and merge readiness |
+| [recover](copilot/agents/recover.md) | Diagnose a Copilot stall/error by mechanism, apply the matching fix, log it |
+| [observe](copilot/agents/observe.md) | Record a manual quality/stall/continue observation (tokometer field kit) |
+| [report](copilot/agents/report.md) | Run the Copilot daily/weekly strategy report and summarize what changed |
+
+The `recover`/`observe`/`report` agents pair with the **tokometer field kit** — the
+Copilot-in-VS-Code collectors and reports in the [tokometer](https://github.com/scottrfrancis/coder)
+repo — built for locked-down machines where Copilot (Auto-only) is the sole assistant.
+They degrade gracefully when the kit isn't installed. See `plans/GOALS.md` / `plans/PLAN.md`
+for the field-kit program.
 
 ### Hooks
 

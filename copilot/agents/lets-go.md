@@ -94,6 +94,21 @@ Run these checks in order:
    - If clean + behind: offer to pull automatically
 7. If on default branch (main/master) with uncommitted changes: suggest creating a feature branch
 
+## Yesterday's Copilot Report (field-kit machines)
+
+If the tokometer field kit is installed (`~/.tokometer/report_copilot.py` exists),
+surface yesterday's picture before planning today:
+
+```bash
+ls -t ~/.tokometer/reports/copilot-*.md 2>/dev/null | head -1
+```
+
+If a report exists, read it and fold ONE line into the ready output: dominant model,
+failure count, and the best/worst hours — e.g. "Yesterday: codex-dominant until 11am,
+Haiku after 2pm; 2 stalls (1 crash-triggered). Schedule heavy work early." If the
+newest report is older than 2 days, remind: run the `report` agent (or check that
+the chat log level is still Trace). Skip silently when the kit isn't installed.
+
 ## Ready Output
 
 Confirm when ready with a brief, high-level plan.

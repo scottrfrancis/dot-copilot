@@ -83,3 +83,11 @@ This document describes Claude Code features that have no direct GitHub Copilot 
 **Copilot**: No equivalent structured planning mode. Can be approximated by asking the agent to "plan before implementing" but lacks the enforced read-only constraint.
 
 **Workaround**: Include planning instructions in agent prompts or ask Copilot explicitly to "analyze and plan before making changes."
+
+## No Local Telemetry API (Field-Kit Workaround)
+
+**Claude Code**: Session transcripts and usage land in local JSONL that tokometer harvests directly — exact tokens per message.
+
+**Copilot in VS Code**: No CLI, no session files, and the OTel exporter is admin/policy-gated on managed profiles (probed 2026-07-17: env vars produce no output; Settings has no otel entries).
+
+**Workaround**: Set the "GitHub Copilot Chat" output channel to **Trace** log level. At Trace, the channel logs per-request `ccreq` summary lines (exact model deployment + latency) and full SSE usage blocks (input/output/cache tokens — Anthropic/Bedrock and OpenAI shapes), plus quota headers, context budgets, and CPU-throttle events. The tokometer `copilot_chat_log` collector parses this into the ledger; `vscode_events` adds crash strings from the session logs; `observe` records human quality ratings. Caveats: Trace must be re-set after some VS Code updates (the `report` agent flags an empty report), and the log format is an implementation detail that may drift — the collector's `--dry-run` smoke test validates against real logs after each Copilot Chat update.
