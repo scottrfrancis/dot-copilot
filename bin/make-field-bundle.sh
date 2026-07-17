@@ -77,46 +77,108 @@ fi
 echo "==> bundle self-test"
 ( cd "$KIT" && python3 probe.py --self-test )
 
-echo "==> zip + encode + chunk"
+echo "==> zip + encode"
 mkdir -p "$DIST"
 ( cd "$STAGE" && zip -qr "$NAME.zip" field-kit )
 ZIP="$STAGE/$NAME.zip"
 ZIP_SHA="$(sha256 "$ZIP")"
-base64 < "$ZIP" > "$STAGE/$NAME.b64"
-( cd "$STAGE" && split -b "$CHUNK_BYTES" "$NAME.b64" "chunk_" )
+# base64, wrapped to 120-col lines for a readable/mail-safe here-string body.
+# Guarantee a trailing newline: PowerShell's here-string terminator '@ must sit at
+# column 0, and fold does not always emit a final newline.
+base64 < "$ZIP" | tr -d '\n' | fold -w 120 > "$STAGE/$NAME.b64"
+printf '\n' >> "$STAGE/$NAME.b64"
 
-CHUNKS=("$STAGE"/chunk_*)
-TOTAL="${#CHUNKS[@]}"
+echo "==> emit self-extracting PowerShell (.ps1.txt)"
+# Deliverable: ONE PowerShell script carrying the base64 inline. Emailed as .txt;
+# on the target the recipient renames it to .ps1 and runs it. It decodes, verifies
+# the SHA-256, unzips into %USERPROFILE%\field-kit, and prints next steps. Windows
+# PowerShell 5.1 (the box's default) — no admin, no external modules.
+PS1_TXT="$DIST/$NAME.ps1.txt"
+{
+cat <<PSHEAD
+<#
+  $NAME — self-extracting GitHub Copilot field kit.
+
+  Emailed as .txt. On the TARGET machine:
+    1. Save this file, rename it from .txt to  $NAME.ps1
+    2. Open PowerShell in that folder and run:
+         powershell -ExecutionPolicy Bypass -File .\\$NAME.ps1
+       (If Windows flagged it as from-the-internet:  Unblock-File .\\$NAME.ps1  first.)
+
+  It decodes + verifies + unzips locally into %USERPROFILE%\\field-kit.
+  Nothing leaves the machine. Then follow field-kit\\BOOTSTRAP.md from step 2.
+#>
+\$ErrorActionPreference = 'Stop'
+\$Name           = '$NAME'
+\$ExpectedZipSha = '$ZIP_SHA'
+\$Dest           = Join-Path \$env:USERPROFILE 'field-kit'
+\$ZipPath        = Join-Path \$env:TEMP "\$Name.zip"
+
+Write-Host "Decoding \$Name ..."
+\$b64 = @'
+PSHEAD
+cat "$STAGE/$NAME.b64"
+cat <<'PSFOOT'
+'@
+[IO.File]::WriteAllBytes($ZipPath, [Convert]::FromBase64String(($b64 -replace '\s','')))
+
+$actual = (Get-FileHash -Algorithm SHA256 $ZipPath).Hash.ToLower()
+if ($actual -ne $ExpectedZipSha.ToLower()) {
+    Write-Error "SHA-256 mismatch — file corrupted in transit.`n expected $ExpectedZipSha`n got      $actual"
+    exit 1
+}
+Write-Host "SHA-256 OK."
+
+if (Test-Path (Join-Path $Dest 'field-kit')) {
+    Write-Host "Note: $Dest\field-kit already exists — it will be overwritten."
+}
+Expand-Archive -Path $ZipPath -DestinationPath $Dest -Force
+Remove-Item $ZipPath -ErrorAction SilentlyContinue
+
+$KitDir = Join-Path $Dest 'field-kit'
+Write-Host ""
+Write-Host "Extracted to $KitDir"
+Write-Host "Next:"
+Write-Host "  cd `"$KitDir`""
+Write-Host "  python probe.py           # read-only environment check"
+Write-Host "  bash install-laptop.sh    # install the tokometer instrumentation (Git Bash)"
+Write-Host "Then read USING-COPILOT.md (once) and RUNBOOK.md (daily). See BOOTSTRAP.md."
+PSFOOT
+} > "$PS1_TXT"
+
+PS1_SHA="$(sha256 "$PS1_TXT")"
 MANIFEST="$DIST/MANIFEST.txt"
 {
-  echo "# $NAME — reassembly manifest ($(date))"
-  echo "zip: $NAME.zip"
-  echo "zip_sha256: $ZIP_SHA"
-  echo "chunks: $TOTAL"
+  echo "# $NAME — manifest ($(date))"
+  echo "deliverable: $NAME.ps1.txt   (email as .txt; rename to .ps1 on the target and run)"
+  echo "ps1_sha256: $PS1_SHA"
+  echo "inner_zip_sha256: $ZIP_SHA   (the script verifies this after decoding)"
 } > "$MANIFEST"
-i=0
-for c in "${CHUNKS[@]}"; do
-  i=$((i+1))
-  nn=$(printf "%02d" "$i"); mm=$(printf "%02d" "$TOTAL")
-  out="$DIST/$NAME.b64.$nn-of-$mm.txt"
-  mv "$c" "$out"
-  echo "$(basename "$out") sha256: $(sha256 "$out")" >> "$MANIFEST"
-done
 
-# the email-body bootstrap card (travels OUTSIDE the zip)
+# email-body card (travels outside the payload)
 cp "$REPO_DIR/field-kit/BOOTSTRAP.md" "$DIST/BOOTSTRAP-email-body.txt"
 
 echo "==> round-trip verification"
+# extract the here-string body straight out of the emitted .ps1.txt, decode, and
+# confirm it reproduces the exact zip — this tests the actual deliverable, not a copy.
 RT="$STAGE/roundtrip"
 mkdir -p "$RT"
-cat "$DIST/$NAME".b64.*-of-*.txt | base64 -d > "$RT/$NAME.zip" 2>/dev/null || \
-  cat "$DIST/$NAME".b64.*-of-*.txt | base64 -D > "$RT/$NAME.zip"   # BSD fallback
+awk "/^\\\$b64 = @'/{f=1;next} /^'@/{f=0} f" "$PS1_TXT" | tr -d '\n' \
+  | { base64 -d 2>/dev/null || base64 -D; } > "$RT/$NAME.zip"
 RT_SHA="$(sha256 "$RT/$NAME.zip")"
 [ "$RT_SHA" = "$ZIP_SHA" ] || { echo "ROUND-TRIP FAILED: $RT_SHA != $ZIP_SHA" >&2; exit 3; }
 ( cd "$RT" && unzip -q "$NAME.zip" && cd field-kit && python3 probe.py --self-test )
 
+# email size guard (single-attachment flow; base64+script overhead ~ +35%)
+PS1_BYTES=$(wc -c < "$PS1_TXT" | tr -d ' ')
+if [ "$PS1_BYTES" -gt "$CHUNK_BYTES" ]; then
+  echo "WARNING: $NAME.ps1.txt is $((PS1_BYTES/1024/1024))MB (> $((CHUNK_BYTES/1024/1024))MB email guard)." >&2
+  echo "         Split it or trim the payload before emailing." >&2
+fi
+
 echo
-echo "bundle OK: $DIST"
+echo "bundle OK: $DIST  (payload $((PS1_BYTES/1024))KB)"
 ls -lh "$DIST" | sed 1d
 echo
-echo "email: attach every .txt in $DIST; paste BOOTSTRAP-email-body.txt into the first message."
+echo "email: attach $NAME.ps1.txt; paste BOOTSTRAP-email-body.txt into the message."
+echo "target: rename .txt -> .ps1, then  powershell -ExecutionPolicy Bypass -File .\\$NAME.ps1"

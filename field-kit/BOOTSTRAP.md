@@ -1,42 +1,34 @@
-# Field Kit — Bootstrap (paste this into the FIRST email's body)
+# Field Kit — Bootstrap (paste this into the email body)
 
-You received one or more `.txt` files named like `field-kit-YYYY-MM-DD.b64.01-of-02.txt`
-plus a `MANIFEST.txt`. They are one zip, base64-encoded and split for email. Reassemble
-on the laptop, verify, unzip, install. No admin needed anywhere.
+You received a file named `field-kit-YYYY-MM-DD.ps1.txt` — a **self-extracting
+PowerShell script** carrying the whole kit inline (emailed as `.txt` so it passes
+mail filters). It decodes, verifies its own SHA-256, and unzips locally. No admin,
+nothing leaves the machine.
 
-## 1. Reassemble the zip
+## 1. Rename and run the script
 
-Put every chunk in one folder (e.g. `%USERPROFILE%\Downloads\fieldkit`). Then EITHER:
+Save the attachment, then:
 
-**Git Bash:**
+1. **Rename** `field-kit-YYYY-MM-DD.ps1.txt` → `field-kit-YYYY-MM-DD.ps1`
+   (drop the `.txt`).
+2. Open **PowerShell** in that folder and run it:
 
-```bash
-cd ~/Downloads/fieldkit
-cat field-kit-*.b64.*-of-*.txt | base64 -d > field-kit.zip
-sha256sum field-kit.zip        # compare with the zip hash in MANIFEST.txt
-```
+   ```powershell
+   # if Windows flagged it as "from the internet", clear that first:
+   Unblock-File .\field-kit-YYYY-MM-DD.ps1
+   # then run (bypass covers the unsigned-script execution policy — no admin):
+   powershell -ExecutionPolicy Bypass -File .\field-kit-YYYY-MM-DD.ps1
+   ```
 
-**cmd (built-ins only):**
+It prints "SHA-256 OK." and extracts to `%USERPROFILE%\field-kit`. If it reports a
+**SHA-256 mismatch**, the file was mangled in transit — re-save the attachment (don't
+copy-paste its text) and rerun. The expected hash is also in `MANIFEST.txt`.
 
-```bat
-cd %USERPROFILE%\Downloads\fieldkit
-copy /b field-kit-*.b64.01-of-*.txt+field-kit-*.b64.02-of-*.txt combined.b64
-:: (add +…03-of… etc. in order if there are more chunks; single chunk: just rename)
-certutil -decode combined.b64 field-kit.zip
-certutil -hashfile field-kit.zip SHA256    :: compare with MANIFEST.txt
-```
-
-If the hash doesn't match: a chunk is missing/duplicated/mangled — check the
-`NN-of-MM` numbering against MANIFEST.txt and redo.
-
-## 2. Unzip and probe
-
-Unzip `field-kit.zip` into a new folder (right-click → Extract All, or
-`unzip field-kit.zip -d ~/field-kit` in Git Bash). Then:
+## 2. Probe
 
 ```bash
-cd ~/field-kit
-python probe.py          # read-only environment check — expect PASS/WARN only
+cd ~/field-kit          # Git Bash;  or  cd %USERPROFILE%\field-kit  in cmd
+python probe.py         # read-only environment check — expect PASS/WARN only
 ```
 
 If "Copilot Chat log at Trace level" fails: in VS Code, `Ctrl+Shift+P` →

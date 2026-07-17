@@ -49,6 +49,6 @@ Also on Mondays: check **Company Portal** for VS Code / extension updates.
 
 ## Updating the kit
 
-Updates arrive the same way they came: new base64 chunks by email → reassemble per
-BOOTSTRAP.md → re-run `install-laptop.sh` (it overwrites kit files; your ledger and
-config survive).
+Updates arrive the same way they came: a new `field-kit-<date>.ps1.txt` by email →
+rename to `.ps1` and run it (re-extracts to `%USERPROFILE%\field-kit`) → re-run
+`install-laptop.sh` (it overwrites kit files; your ledger and config survive).
