@@ -1,10 +1,11 @@
 ---
-name: "review-pr"
 description: "PR code review: bugs, security, missing tests, style. Pass PR number, branch name, or omit for current branch."
+mode: agent
 tools: ["executeCommand", "readFile", "searchFiles", "listDirectory"]
 ---
-
 # PR Code Review
+
+**Arguments (optional):** a PR number or branch name; omit to review the current branch's diff.
 
 Review a pull request for bugs, security issues, missing tests, and code quality.
 

@@ -34,15 +34,23 @@ This document maps every component of the `~/.claude/` configuration to its GitH
 
 ## Commands → Agents
 
-| Claude Code Command | Copilot Agent | Key Differences |
+Claude commands map to Copilot **prompt files** (`copilot/prompts/*.prompt.md`),
+NOT chat modes. A prompt file is invoked by typing `/name` in the Chat box with
+arguments after it — the same run-it-and-go interaction as a Claude slash command.
+(Chat modes — the Ask/Edit/Agent dropdown — are personas you switch *into*, not
+commands you run; this kit ships none, by design.)
+
+| Claude Code Command | Copilot prompt file | Invocation |
 |---|---|---|
-| `/lets-go [role]` | `lets-go` agent | Invoked from dropdown, not `/slash`. No `$ARGUMENTS` — user provides context in chat. |
-| `/session-logger [topic]` | `session-logger` agent | Same behavior, different invocation |
-| `/handoff [notes]` | `handoff` agent | Same behavior, different invocation |
-| `/mine-sessions [days:N]` | `mine-sessions` agent | Same behavior, different invocation |
-| `/arch-review` | `arch-review` agent | Same behavior, different invocation |
-| `/autocommit [-y] [-t type]` | `autocommit` agent | Claude's YAML step format → agent instructions |
-| `/checkpoint-progress` | `checkpoint-progress` agent | Claude's bash script → agent instructions |
+| `/lets-go [role]` | `lets-go.prompt.md` | `/lets-go docs` — text after the name is the role |
+| `/session-logger [topic]` | `session-logger.prompt.md` | `/session-logger <topic>` |
+| `/handoff [notes]` | `handoff.prompt.md` | `/handoff <notes>` |
+| `/mine-sessions [days:N]` | `mine-sessions.prompt.md` | `/mine-sessions 7` |
+| `/arch-review` | `arch-review.prompt.md` | `/arch-review [path]` |
+| `/autocommit [-y] [-t type]` | `autocommit.prompt.md` | `/autocommit -t fix` |
+| `/checkpoint-progress` | `checkpoint-progress.prompt.md` | `/checkpoint-progress` |
+| `/review-pr`, `/babysit-pr` | `*.prompt.md` | `/review-pr 42` |
+| `/recover`, `/observe`, `/report` | `*.prompt.md` | field-kit rituals |
 
 ### Command Features Not Ported
 
@@ -55,10 +63,17 @@ This document maps every component of the `~/.claude/` configuration to its GitH
 
 ### Invocation Differences
 
-- **Claude Code**: `/command-name` slash syntax, `$ARGUMENTS` variable
-- **Copilot**: Selected from agent dropdown or referenced in chat. Arguments are provided naturally in conversation.
-- **Claude Code**: `allowed-tools` restricts which tools a command can use
-- **Copilot**: `tools` array in YAML frontmatter serves similar purpose
+- **Claude Code**: `/command-name` slash syntax, `$ARGUMENTS` variable.
+- **Copilot**: `/prompt-name` in the Chat box — the *same* run-and-go gesture.
+  Arguments are the plain text you type after the name (the prompt body says how to
+  read them); `${input:var}` placeholders exist but are avoided here since they pop a
+  modal fill-in. Prompt files run in `mode: agent` (tools + multi-step) unless the
+  frontmatter says otherwise.
+- **Claude Code**: `allowed-tools` restricts which tools a command can use.
+- **Copilot**: `tools` array (or `mode`) in the prompt frontmatter serves the same purpose.
+- **Not modes**: don't confuse prompt files with chat modes. Modes are the
+  Ask/Edit/Agent dropdown — a persona you enter and stay in. Runnable rituals are
+  prompt files; this kit deliberately ships no custom modes.
 
 ## Hooks
 

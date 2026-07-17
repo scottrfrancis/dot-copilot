@@ -1,9 +1,8 @@
 ---
-name: "observe"
 description: "Record a manual quality/stall/continue observation into the tokometer ledger"
+mode: agent
 tools: ["executeCommand"]
 ---
-
 # Observe — one-line manual observation
 
 Record the signal no log captures: the human quality judgment, and the

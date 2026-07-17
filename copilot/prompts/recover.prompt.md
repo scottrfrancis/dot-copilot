@@ -1,9 +1,8 @@
 ---
-name: "recover"
 description: "Diagnose a Copilot stall/error/degradation by mechanism, apply the matching fix, and log the event"
+mode: agent
 tools: ["executeCommand", "readFile", "listDirectory"]
 ---
-
 # Recover — Copilot failure triage
 
 Something went wrong: a stall, an error, or output that suddenly got worse. Do NOT

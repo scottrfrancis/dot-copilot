@@ -1,10 +1,11 @@
 ---
-name: "session-logger"
 description: "Create structured session summary with effectiveness assessment and cross-linking"
+mode: agent
 tools: ["executeCommand", "readFile", "editFile", "searchFiles", "listDirectory"]
 ---
-
 # Session Logger
+
+**Arguments (optional):** text after `/session-logger` is the session topic/title. If absent, infer one from the work.
 
 Create a comprehensive session summary and save it to the shared cross-tool session logs directory.
 

@@ -12,21 +12,38 @@ in the dot-copilot repo; this doc is about *operating*, not configuration.
 
 Claude Code is a CLI agent you steer with slash commands, global config, and hooks
 that fire automatically. Copilot is a chat sidebar with per-repo config and **no
-global anything**: agents live in a dropdown (not `/slash`), instructions auto-apply
-by glob, and nothing runs at session start unless *you* invoke it. Your rituals all
-still work — but every one of them becomes a deliberate first move instead of an
-ambient default. The discipline you already have is the port; the kit supplies the
-tooling.
+global anything**: instructions auto-apply by glob, and nothing runs at session
+start unless *you* invoke it. Your rituals all still work — but each becomes a
+deliberate first move instead of an ambient default. The discipline you already have
+is the port; the kit supplies the tooling.
+
+## Commands vs. modes — your `/slash` muscle memory is correct
+
+Copilot has two customization primitives, and they are NOT the same:
+
+- **Prompt files = runnable commands.** Type `/lets-go`, `/handoff`, `/recover` in
+  the Chat box, add arguments as plain text after the name, press Enter — it runs
+  once, inline, in the chat you're already in. **This kit ships every ritual as a
+  prompt file**, so your `/doc-review`-style muscle memory works unchanged.
+- **Chat modes = a persona you switch INTO** (the dropdown next to Ask/Edit/Agent).
+  You don't run a mode; you *become* it and converse until you switch back. This kit
+  ships **zero** custom modes on purpose — modes break the plan→do→check→act loop by
+  forcing a context switch, and none of these rituals are atomic/safety-critical
+  enough to justify one.
+
+Rule: **something you run → `/command`. Something you become → a mode.** Here it's
+all commands. If a `/name` doesn't autocomplete, the prompts folder didn't get
+copied into `.github/prompts/` (BOOTSTRAP step 4).
 
 ## Your session lifecycle, ported
 
 | Your Claude habit | On this box | What changed |
 |---|---|---|
-| `/lets-go` (or `/pickup`) opens every session | Select the **lets-go** agent in the Copilot dropdown, first thing | No SessionStart hook fires for you — the git-sync + handoff-load only happens if you invoke it. It also surfaces yesterday's tokometer report. |
-| `/session-logger` closes substantive sessions | **session-logger** agent → writes to `session-logs/` | Same format, same YAML frontmatter (`tool: copilot`), cross-tool readable — a handoff written here picks up in Claude Code at home. |
-| `/handoff` + next-day `/pickup` | **handoff** agent; next session, lets-go loads it | Identical file format. Your carry-forward-blockers habit works unchanged — but only if the handoff actually gets written, so keep the closing ritual sacred. |
+| `/lets-go [role]` opens every session | Type **`/lets-go`** in Chat (add a role: `/lets-go docs`) | No SessionStart hook fires for you — the git-sync + handoff-load only happens when you run it. It also surfaces yesterday's tokometer report. |
+| `/session-logger [topic]` closes substantive sessions | **`/session-logger`** → writes to `session-logs/` | Same format, same YAML frontmatter (`tool: copilot`), cross-tool readable — a log written here picks up in Claude Code at home. |
+| `/handoff` + next-day `/pickup` | **`/handoff`**; next session, `/lets-go` loads it | Identical file format. Your carry-forward-blockers habit works unchanged — but only if the handoff actually gets written, so keep the closing ritual sacred. (No `/pickup` prompt yet — `/lets-go` does the load.) |
 | `b start` / `b stop` time tracking | **Not on this box** — `b` isn't installed | Your session-logger timestamps are the fallback time record. |
-| `/autocommit` | **autocommit** agent | Same Conventional Commits behavior. PRs: same draft-and-you-merge gate you already keep. |
+| `/autocommit [-y] [-t type]` | **`/autocommit`** (args after the name) | Same Conventional Commits behavior. PRs: same draft-and-you-merge gate you already keep. |
 
 ## What does NOT port — and what replaces it
 
@@ -67,13 +84,13 @@ What NOT to do when output degrades: your instinct at home is `/compact` or a
 sharper reprompt. Here, **never simplify or fragment the ask** — that reads as
 an easier task and routes you further down. The full doctrine is in the
 `copilot-auto-tactics` and `context-hygiene` instructions (they auto-apply);
-the failure-triage table is the **recover** agent.
+the failure-triage table is the **`/recover`** command.
 
 ## The habits this box adds (not in your Claude repertoire)
 
 1. **Hover the response** when quality shifts — model identity is data, and the
    harness logs it; your job is just to notice.
-2. **`observe`** the moment something happens: `observe --stall`,
+2. **`/observe`** (or the `observe` shell cmd) the moment something happens: `observe --stall`,
    `observe --continue-prompt`, `observe 4 "note"` — ten seconds, from Git Bash.
    These are the only signals the logs can't capture.
 3. **Harvest + report at session end** (RUNBOOK): the data answers "was it me,
@@ -103,7 +120,7 @@ Two companions that make auto-accept safe *for you*:
 
 - **Git is your actual review gate, not the Keep button.** You already review
   diffs before committing — auto-Keep changes nothing about that. Keep the habit:
-  checkpoint before a long agent run (`checkpoint-progress` agent or a WIP
+  checkpoint before a long agent run (`/checkpoint-progress` or a WIP
   commit), then `git diff` judges the run afterward, exactly like at home.
 - **Terminal approvals are a separate nag** with a separate fix: search Settings
   for **"auto approve"** (`chat.tools.terminal.autoApprove`) and allow-list the
@@ -130,8 +147,8 @@ prod-shaped state. That stays on the draft-and-you-send rule you already live by
 ## Ten-second card
 
 ```
-open   : lets-go agent            close  : session-logger → handoff → harvest.sh → report
-stall  : recover agent            felt it: observe 1-5 / --stall / --continue-prompt
+open   : /lets-go            close  : /session-logger → /handoff → harvest.sh → /report
+stall  : /recover            felt it: observe 1-5 / --stall / --continue-prompt
 degrade: fresh chat, FULL altitude — never fragment      hover: check the model
 keep-nag: chat.editing.autoAcceptDelay=10   terminal-nag: chat.tools.terminal.autoApprove
 weekly : report --weekly Monday   after VS Code update: log level back to Trace

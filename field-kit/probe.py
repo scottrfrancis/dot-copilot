@@ -29,7 +29,7 @@ BUNDLE_MANIFEST = [
     "tokometer/tokometer.env",
     "copilot/copilot-instructions.md",
     "copilot/instructions",
-    "copilot/agents",
+    "copilot/prompts",
     "install-laptop.sh",
     "RUNBOOK.md",
     "PROBE-RESULTS.md",

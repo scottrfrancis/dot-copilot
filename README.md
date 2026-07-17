@@ -1,6 +1,6 @@
 # dot-copilot
 
-Portable GitHub Copilot configuration — the Copilot equivalent of `~/.claude/`. Provides consistent guidelines, agents, and hooks across all projects via symlinks.
+Portable GitHub Copilot configuration — the Copilot equivalent of `~/.claude/`. Provides consistent guidelines, runnable /commands, and hooks across all projects via symlinks.
 
 ## Quick Start
 
@@ -11,19 +11,19 @@ Portable GitHub Copilot configuration — the Copilot equivalent of `~/.claude/`
 # This creates symlinks in .github/:
 #   .github/copilot-instructions.md -> copilot/copilot-instructions.md
 #   .github/instructions/           -> copilot/instructions/
-#   .github/agents/                 -> copilot/agents/
+#   .github/prompts/                -> copilot/prompts/
 #   .github/hooks/                  -> copilot/hooks/
 ```
 
 ## How It Works
 
-This repository is a **base class** for Copilot configuration. It contains reusable instructions, agents, and hooks that get symlinked into each project's `.github/` directory. Updates here propagate automatically to all linked projects.
+This repository is a **base class** for Copilot configuration. It contains reusable instructions, prompt-file commands, and hooks that get symlinked into each project's `.github/` directory. Updates here propagate automatically to all linked projects.
 
 ```
 dot-copilot/copilot/          Target project/.github/
 ├── copilot-instructions.md  ←──  copilot-instructions.md (symlink)
 ├── instructions/            ←──  instructions/ (symlink)
-├── agents/                  ←──  agents/ (symlink)
+├── prompts/                 ←──  prompts/ (symlink)
 └── hooks/                   ←──  hooks/ (symlink)
 ```
 
@@ -32,11 +32,11 @@ dot-copilot/copilot/          Target project/.github/
 To customize any component for a specific project, replace the symlink with a real file:
 
 ```bash
-# Replace the symlinked agents directory with a project-specific one
-rm .github/agents
-cp -r /Volumes/workspace/dot-copilot/copilot/agents .github/agents
+# Replace the symlinked prompts directory with a project-specific one
+rm .github/prompts
+cp -r /Volumes/workspace/dot-copilot/copilot/prompts .github/prompts
 
-# Now edit .github/agents/lets-go.md for project-specific behavior
+# Now edit .github/prompts/lets-go.prompt.md for project-specific behavior
 ```
 
 The base config knows nothing about any specific project — projects extend it.
@@ -83,26 +83,30 @@ Auto-applied by Copilot based on `applyTo` glob patterns in YAML frontmatter.
 | [pr-token-tracking](copilot/instructions/pr-token-tracking.instructions.md) | PR creation | Include AI token usage in PR descriptions |
 | [project-setup](copilot/instructions/project-setup.instructions.md) | config files | Tiered project bootstrapping checklist |
 
-### Agents (Custom Agents)
+### Prompts (Runnable Commands)
 
-Invoked from the Copilot agent dropdown. Ported from Claude Code commands.
+Invoked by typing **`/name`** in the Copilot Chat box (arguments follow the name),
+the same run-it-and-go gesture as a Claude Code slash-command. Ported from
+`~/.claude/commands/`. These are prompt files, **not** chat modes — nothing here is
+a dropdown persona you switch into; the kit ships no custom modes by design.
 
-| Agent | Purpose |
+| Command | Purpose |
 |---|---|
-| [lets-go](copilot/agents/lets-go.md) | Session initialization with git sync protocol |
-| [session-logger](copilot/agents/session-logger.md) | Session summary with effectiveness assessment |
-| [handoff](copilot/agents/handoff.md) | Continuation prompt for next session |
-| [mine-sessions](copilot/agents/mine-sessions.md) | Analyze session logs for patterns and metrics |
-| [arch-review](copilot/agents/arch-review.md) | Principal Architect review against industry frameworks |
-| [autocommit](copilot/agents/autocommit.md) | AI-powered conventional commit message generation |
-| [checkpoint-progress](copilot/agents/checkpoint-progress.md) | WIP commit and session state preservation |
-| [review-pr](copilot/agents/review-pr.md) | PR code review: bugs, security, missing tests, style |
-| [babysit-pr](copilot/agents/babysit-pr.md) | Monitor a PR for checks, reviews, and merge readiness |
-| [recover](copilot/agents/recover.md) | Diagnose a Copilot stall/error by mechanism, apply the matching fix, log it |
-| [observe](copilot/agents/observe.md) | Record a manual quality/stall/continue observation (tokometer field kit) |
-| [report](copilot/agents/report.md) | Run the Copilot daily/weekly strategy report and summarize what changed |
+| [/lets-go](copilot/prompts/lets-go.prompt.md) | Session initialization with git sync protocol |
+| [/session-logger](copilot/prompts/session-logger.prompt.md) | Session summary with effectiveness assessment |
+| [/handoff](copilot/prompts/handoff.prompt.md) | Continuation prompt for next session |
+| [/mine-sessions](copilot/prompts/mine-sessions.prompt.md) | Analyze session logs for patterns and metrics |
+| [/arch-review](copilot/prompts/arch-review.prompt.md) | Principal Architect review against industry frameworks |
+| [/autocommit](copilot/prompts/autocommit.prompt.md) | AI-powered conventional commit message generation |
+| [/checkpoint-progress](copilot/prompts/checkpoint-progress.prompt.md) | WIP commit and session state preservation |
+| [/review-pr](copilot/prompts/review-pr.prompt.md) | PR code review: bugs, security, missing tests, style |
+| [/babysit-pr](copilot/prompts/babysit-pr.prompt.md) | Monitor a PR for checks, reviews, and merge readiness |
+| [/recover](copilot/prompts/recover.prompt.md) | Diagnose a Copilot stall/error by mechanism, apply the matching fix, log it |
+| [/observe](copilot/prompts/observe.prompt.md) | Record a manual quality/stall/continue observation (tokometer field kit) |
+| [/report](copilot/prompts/report.prompt.md) | Run the Copilot daily/weekly strategy report and summarize what changed |
+| [/explain-diff-md](copilot/prompts/explain-diff-md.prompt.md), [/explain-diff-html](copilot/prompts/explain-diff-html.prompt.md) | Rich explanation of a diff/branch/PR as a self-contained doc |
 
-The `recover`/`observe`/`report` agents pair with the **tokometer field kit** — the
+The `/recover`, `/observe`, `/report` commands pair with the **tokometer field kit** — the
 Copilot-in-VS-Code collectors and reports in the [tokometer](https://github.com/scottrfrancis/coder)
 repo — built for locked-down machines where Copilot (Auto-only) is the sole assistant.
 They degrade gracefully when the kit isn't installed. See `plans/GOALS.md` / `plans/PLAN.md`
@@ -135,7 +139,7 @@ dot-copilot/
 ├── copilot/                     # THE DELIVERABLE — portable Copilot config
 │   ├── copilot-instructions.md  # Global behavioral rules
 │   ├── instructions/            # Path-scoped guidelines (18 files)
-│   ├── agents/                  # Custom agents (9 files)
+│   ├── prompts/                 # Runnable /commands (14 files)
 │   └── hooks/                   # Hook config + scripts
 │       ├── session-lifecycle.json
 │       └── scripts/
@@ -166,17 +170,17 @@ This configuration is ported from a `~/.claude/` setup for Claude Code. See [doc
 
 ## Session Lifecycle
 
-The agents and hooks implement a session lifecycle pattern:
+The commands and hooks implement a session lifecycle pattern:
 
 ```
 [sessionStart hook] → auto-inject handoff context
   ↓
-lets-go agent → sync git, load docs, verify context
+/lets-go → sync git, load docs, verify context
   ↓
 [work]
   ↓
 [sessionEnd hook] → remind about logging
   ↓
-session-logger agent → capture outcomes
-handoff agent → generate continuation prompt
+/session-logger → capture outcomes
+/handoff → generate continuation prompt
 ```

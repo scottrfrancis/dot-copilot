@@ -1,10 +1,11 @@
 ---
-name: "lets-go"
 description: "Session initialization with git sync protocol, project overview, and context loading"
+mode: agent
 tools: ["executeCommand", "readFile", "searchFiles", "editFile", "listDirectory"]
 ---
-
 # Session Initialization
+
+**Arguments (optional):** text after `/lets-go` is the session role/focus (e.g. `/lets-go docs`). Use it to bias the overview and suggested next steps.
 
 Set initial context for a working session.
 

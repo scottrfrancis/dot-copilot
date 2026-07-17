@@ -1,9 +1,8 @@
 ---
-name: "report"
 description: "Run the tokometer Copilot daily/weekly report and summarize what changed"
+mode: agent
 tools: ["executeCommand", "readFile"]
 ---
-
 # Report — Copilot usage & health
 
 Generate the strategy report from the local tokometer ledger and read it back with

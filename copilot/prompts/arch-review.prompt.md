@@ -1,10 +1,11 @@
 ---
-name: "arch-review"
 description: "Principal Architect review: AWS/SOLID/CNCF frameworks, security, testing, AI patterns, technical debt"
+mode: agent
 tools: ["executeCommand", "readFile", "searchFiles", "editFile", "listDirectory", "webSearch"]
 ---
-
 # Principal Architect Review
+
+**Arguments (optional):** a path or component to scope the review; omit for the whole workspace.
 
 Perform a comprehensive architectural review of the current project considering:
 

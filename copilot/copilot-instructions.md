@@ -33,17 +33,20 @@ Path-scoped instructions are auto-applied based on file context. These are insta
 | `c4-diagramming` | `*.puml`, `*.plantuml` | PlantUML C4 Model organization |
 | `markdown-formatting` | `*.md` | Spacing and formatting standards |
 
-## Available Agents
+## Available Commands
 
-Custom agents are installed in `.github/agents/`:
+Runnable prompt files in `.github/prompts/` — invoke by typing **`/name`** in the
+Copilot Chat box (arguments follow the name). These are commands, not chat modes.
 
-- **lets-go** — Session initialization with git sync protocol
-- **session-logger** — Session summary with cross-linking and effectiveness assessment
-- **handoff** — Generate continuation prompt for seamless session handoff
-- **mine-sessions** — Analyze session logs for patterns, metrics, and improvements
-- **arch-review** — Principal Architect review against industry frameworks
-- **autocommit** — AI-powered conventional commit message generation
-- **checkpoint-progress** — WIP commit and session state preservation
+- **/lets-go** — Session initialization with git sync protocol
+- **/session-logger** — Session summary with cross-linking and effectiveness assessment
+- **/handoff** — Generate continuation prompt for seamless session handoff
+- **/mine-sessions** — Analyze session logs for patterns, metrics, and improvements
+- **/arch-review** — Principal Architect review against industry frameworks
+- **/autocommit** — AI-powered conventional commit message generation
+- **/checkpoint-progress** — WIP commit and session state preservation
+- **/review-pr**, **/babysit-pr** — PR review and merge-readiness monitoring
+- **/recover**, **/observe**, **/report** — tokometer field-kit rituals (Copilot-on-locked-down-box)
 
 ## Hooks
 
@@ -61,7 +64,7 @@ Registered in `.github/hooks/session-lifecycle.json`:
 
 ## Project-Specific Overrides
 
-Projects can override any base configuration by replacing the symlink with a real file. For example, to customize the `lets-go` agent for a specific project, replace `.github/agents/lets-go.md` with a project-specific version.
+Projects can override any base configuration by replacing the symlink with a real file. For example, to customize the `/lets-go` command for a specific project, replace `.github/prompts/lets-go.prompt.md` with a project-specific version.
 
 ## Version History
 

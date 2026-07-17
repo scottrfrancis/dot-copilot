@@ -11,7 +11,7 @@ This repository contains portable GitHub Copilot configuration files — the Cop
 - `copilot/` — The deliverable: portable Copilot config files
   - `copilot-instructions.md` — Global instructions (symlinked to `.github/copilot-instructions.md`)
   - `instructions/` — Path-scoped guidelines (symlinked to `.github/instructions/`)
-  - `agents/` — Custom agents (symlinked to `.github/agents/`)
+  - `prompts/` — Runnable `/name` commands (symlinked to `.github/prompts/`)
   - `hooks/` — Hook definitions and scripts (symlinked to `.github/hooks/`)
 - `install.sh` — Symlink installer for target projects
 - `docs/` — Mapping documentation and known limitations
@@ -24,7 +24,7 @@ Each file in `copilot/` has a 1:1 mapping to a Claude Code equivalent:
 |---|---|
 | `copilot/copilot-instructions.md` | `~/.claude/CLAUDE.md` |
 | `copilot/instructions/*.instructions.md` | `~/.claude/guidelines/*.md` |
-| `copilot/agents/*.md` | `~/.claude/commands/*.md` |
+| `copilot/prompts/*.prompt.md` | `~/.claude/commands/*.md` |
 | `copilot/hooks/` | `~/.claude/hooks/` + `settings.json` |
 
 ## Development Guidelines

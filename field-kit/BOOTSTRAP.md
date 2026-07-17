@@ -61,11 +61,13 @@ Copy (not symlink — keeps it simple on Windows) into the project you work in:
 ```bash
 cp -r ~/field-kit/copilot/copilot-instructions.md  <project>/.github/copilot-instructions.md
 cp -r ~/field-kit/copilot/instructions             <project>/.github/instructions
-cp -r ~/field-kit/copilot/agents                   <project>/.github/agents
+cp -r ~/field-kit/copilot/prompts                   <project>/.github/prompts
 ```
 
-Reload VS Code. The agents (lets-go, recover, observe, report, handoff, …) appear in
-the Copilot agent dropdown; the instructions apply automatically.
+Reload VS Code. The instructions apply automatically; the rituals are **runnable
+commands** — in the Copilot Chat box type `/lets-go`, `/handoff`, `/recover`,
+`/report`, `/observe`, … (add arguments after the name), press Enter, and it runs
+inline. No dropdown, no mode-switching.
 
 ## 5. Live with it
 

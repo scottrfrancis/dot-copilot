@@ -1,10 +1,11 @@
 ---
-name: "mine-sessions"
 description: "Analyze session logs for patterns, metrics, and process improvement recommendations"
+mode: agent
 tools: ["executeCommand", "readFile", "searchFiles", "editFile", "listDirectory"]
 ---
-
 # Mine Session Logs
+
+**Arguments (optional):** `/mine-sessions 7` limits to the last N days; `/mine-sessions` scans all available logs.
 
 Analyze session logs to extract patterns, quantitative metrics, and actionable feedback for improving development workflows.
 

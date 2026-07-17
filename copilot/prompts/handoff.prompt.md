@@ -1,10 +1,11 @@
 ---
-name: "handoff"
 description: "Generate continuation prompt for seamless session handoff to next session"
+mode: agent
 tools: ["executeCommand", "readFile", "searchFiles", "editFile", "listDirectory"]
 ---
-
 # Session Handoff
+
+**Arguments (optional):** text after `/handoff` is extra notes to fold into the continuation prompt.
 
 Generate a continuation prompt capturing current session state for the next session. This is forward-looking — what should the next session know and do — unlike `session-logger` which documents what happened.
 

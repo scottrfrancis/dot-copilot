@@ -68,13 +68,19 @@ This document describes Claude Code features that have no direct GitHub Copilot 
 
 **Workaround**: Ported as agent markdown instructions. The agent follows the steps described in prose rather than executing a structured YAML pipeline. This actually works well since AI agents are good at following natural language instructions.
 
-## Invocation Model Differs
+## Invocation Model — Actually Preserved
 
 **Claude Code**: Commands are invoked with `/slash-command` syntax. Feels like a CLI.
 
-**Copilot**: Agents are selected from a dropdown in the chat interface. Less discoverable but more visual.
+**Copilot**: The kit ships rituals as **prompt files** (`.github/prompts/*.prompt.md`),
+invoked the same way — type `/name` in the Chat box, arguments after it, Enter, runs
+inline. So `/lets-go` muscle memory carries over unchanged.
 
-**Impact**: Users familiar with `/lets-go` need to learn to select the "lets-go" agent from the dropdown instead. The functionality is identical — only the invocation differs.
+**Not modes**: Copilot *also* has chat modes (the Ask/Edit/Agent dropdown) — personas
+you switch into and converse within, which do NOT "run." Early versions of this kit
+mapped commands to modes, which broke the run-it-and-go expectation; that was
+corrected. The kit ships prompt-file commands and no custom modes. See
+`concept-mapping.md` for the full distinction.
 
 ## No Plan Mode
 
