@@ -82,6 +82,38 @@ the failure-triage table is the **recover** agent.
    by instinct; here it's also OOM prevention, so run it *earlier* than feels
   necessary.
 
+## The Keep button (and how to retire it)
+
+Agent-mode edits sit in a pending state until you click **Keep** — per file, over
+and over. Claude Code's accept-edits mode has no Copilot twin in the UI, but the
+settings get you most of the way (your `settings.json` is writable — verified):
+
+```jsonc
+// user settings.json
+"chat.editing.autoAcceptDelay": 10,   // seconds; pending edits auto-Keep after a
+                                      // countdown ring on the button. 0 = off.
+```
+
+Pick the delay by trust level: `5` is close to Claude's accept-edits mode, `30`
+leaves a real veto window mid-run. (Setting names have drifted across VS Code
+versions — if that key doesn't light up on this build, search Settings for
+**"auto accept"** in the Chat section; on 1.129 it's there.)
+
+Two companions that make auto-accept safe *for you*:
+
+- **Git is your actual review gate, not the Keep button.** You already review
+  diffs before committing — auto-Keep changes nothing about that. Keep the habit:
+  checkpoint before a long agent run (`checkpoint-progress` agent or a WIP
+  commit), then `git diff` judges the run afterward, exactly like at home.
+- **Terminal approvals are a separate nag** with a separate fix: search Settings
+  for **"auto approve"** (`chat.tools.terminal.autoApprove`) and allow-list the
+  narrow, read-only, test-running set — e.g. `pytest`, `git status/diff/log`,
+  your build command. On this client's box, keep the list tight and never
+  blanket-approve; WDAC audits what runs, and so should you.
+
+What NOT to auto-approve even so: anything that leaves the machine or touches
+prod-shaped state. That stays on the draft-and-you-send rule you already live by.
+
 ## Known frictions, translated from your Claude logs
 
 - Your recurring "sandbox blocks git-over-SSH" annoyance doesn't exist here —
@@ -101,5 +133,6 @@ the failure-triage table is the **recover** agent.
 open   : lets-go agent            close  : session-logger → handoff → harvest.sh → report
 stall  : recover agent            felt it: observe 1-5 / --stall / --continue-prompt
 degrade: fresh chat, FULL altitude — never fragment      hover: check the model
+keep-nag: chat.editing.autoAcceptDelay=10   terminal-nag: chat.tools.terminal.autoApprove
 weekly : report --weekly Monday   after VS Code update: log level back to Trace
 ```
