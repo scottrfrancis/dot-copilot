@@ -125,7 +125,10 @@ dot-copilot/
 ├── CLAUDE.md                    # For developing this project with Claude Code
 ├── install.sh                   # Symlink installer
 ├── bin/
-│   └── sync-from-dot-claude.sh  # Propagate ~/.claude/guidelines/ edits to copilot/instructions/
+│   ├── sync-from-dot-claude.sh  # Propagate ~/.claude/guidelines/ edits to copilot/instructions/
+│   └── make-field-bundle.sh     # Assemble the email-transferable field kit (zip → b64 chunks)
+├── field-kit/                   # Locked-down-laptop kit: probe, BOOTSTRAP/RUNBOOK, installer
+├── plans/                       # Field-kit program: GOALS.md + PLAN.md (probe results inside)
 ├── session-logs/                # Cross-tool session logs (Cursor, Droid, Copilot, Claude Code)
 ├── .claude/                     # Claude Code project setup (Tier 1)
 │   └── memory/MEMORY.md
