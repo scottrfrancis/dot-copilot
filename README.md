@@ -66,6 +66,11 @@ Auto-applied by Copilot based on `applyTo` glob patterns in YAML frontmatter.
 | [ai-patterns](copilot/instructions/ai-patterns.instructions.md) | `*.py`, `*.ts`, `*.js` | LLM integration patterns |
 | [C4-diagramming](copilot/instructions/C4-diagramming.instructions.md) | `*.puml`, `*.plantuml` | C4 Model PlantUML organization |
 | [golang](copilot/instructions/golang.instructions.md) | `*.go`, `go.mod`, `go.sum` | Go JSON safety, gosec patterns, G104 triage |
+| [python](copilot/instructions/python.instructions.md) | `*.py`, `pyproject.toml` | Type hints, error handling, testing patterns |
+| [typescript](copilot/instructions/typescript.instructions.md) | `*.ts`, `*.tsx` | TypeScript standards |
+| [docker](copilot/instructions/docker.instructions.md) | `Dockerfile*`, `compose*.yml` | Dockerfile / compose authoring standards |
+| [terraform](copilot/instructions/terraform.instructions.md) | `*.tf`, `*.tfvars` | Terraform standards |
+| [git-workflow](copilot/instructions/git-workflow.instructions.md) | `**` | Branch + PR discipline; never commit/push to main; stacked-PR handling |
 | [markdown-formatting](copilot/instructions/markdown-formatting.instructions.md) | `*.md`, `*.mdx` | Spacing and formatting standards |
 | [prose-style](copilot/instructions/prose-style.instructions.md) | `*.md`, `*.mdx` | Anti-AI-smell rules for narrative prose |
 | [readme-documentation](copilot/instructions/readme-documentation.instructions.md) | `*.md` | README as central documentation hub |
@@ -105,6 +110,18 @@ a dropdown persona you switch into; the kit ships no custom modes by design.
 | [/observe](copilot/prompts/observe.prompt.md) | Record a manual quality/stall/continue observation (tokometer field kit) |
 | [/report](copilot/prompts/report.prompt.md) | Run the Copilot daily/weekly strategy report and summarize what changed |
 | [/explain-diff-md](copilot/prompts/explain-diff-md.prompt.md), [/explain-diff-html](copilot/prompts/explain-diff-html.prompt.md) | Rich explanation of a diff/branch/PR as a self-contained doc |
+
+**Spec-Driven Development (SDLC)** — ported from the airgapped engagement fork (generic; domain examples scrubbed):
+
+| Command | Purpose |
+|---|---|
+| [/discovery-init](copilot/prompts/discovery-init.prompt.md) | Scaffold an SDD project: artifact templates, glossary, constitution, traceability chain |
+| [/interview-to-spec](copilot/prompts/interview-to-spec.prompt.md) | Interview notes → readout, FR-### requirements, Gherkin scenarios, tracker updates |
+| [/design-review](copilot/prompts/design-review.prompt.md) | Review D2.x design docs for consistency, terminology, cross-reference integrity |
+| [/trace-check](copilot/prompts/trace-check.prompt.md) | Validate bidirectional traceability across requirements, feature files, scenarios, tests |
+| [/constitution](copilot/prompts/constitution.prompt.md) | Generate CONSTITUTION.md + WORKFLOWS.md (principles, Definition of Done, quality gates) |
+| [/assumptions](copilot/prompts/assumptions.prompt.md) | Track hypothesis-driven assumptions (if-true/if-false/fallback) in ASSUMPTIONS-TRACKER.md |
+| [/gherkin](copilot/prompts/gherkin.prompt.md) | Draft Gherkin acceptance scenarios from a requirement or FR-### |
 
 The `/recover`, `/observe`, `/report` commands pair with the **tokometer field kit** — the
 Copilot-in-VS-Code collectors and reports in the [tokometer](https://github.com/scottrfrancis/coder)
