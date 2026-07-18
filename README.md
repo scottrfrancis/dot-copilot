@@ -124,6 +124,7 @@ a dropdown persona you switch into; the kit ships no custom modes by design.
 | [/assumptions](copilot/prompts/assumptions.prompt.md) | Track hypothesis-driven assumptions (if-true/if-false/fallback) in ASSUMPTIONS-TRACKER.md |
 | [/gherkin](copilot/prompts/gherkin.prompt.md) | Draft Gherkin acceptance scenarios from a requirement or FR-### |
 | [/adr](copilot/prompts/adr.prompt.md) | Write an ADR in the canonical format — from a described decision or extracted from a session log |
+| [/scrub-check](copilot/prompts/scrub-check.prompt.md) | Advisory review of about-to-push changes for proper nouns/identifiers that may need scrubbing (context-aware complement to `bin/entity-advisory.py`) |
 
 The `/recover`, `/observe`, `/report` commands pair with the **tokometer field kit** — the
 Copilot-in-VS-Code collectors and reports in the [tokometer](https://github.com/scottrfrancis/coder)
@@ -148,7 +149,9 @@ dot-copilot/
 ├── CLAUDE.md                    # For developing this project with Claude Code
 ├── install.sh                   # Symlink installer
 ├── bin/
-│   └── make-field-bundle.sh     # Assemble the email-transferable field kit (zip → b64 chunks)
+│   ├── make-field-bundle.sh     # Assemble the email-transferable field kit (zip → b64 chunks)
+│   ├── entity-advisory.py       # Pre-push ADVISORY: flag new entity-like names to triage
+│   └── pre-push                 # Git hook that runs the advisory (symlink into .git/hooks or core.hooksPath)
 ├── field-kit/                   # Locked-down-laptop kit: probe, BOOTSTRAP/RUNBOOK, installer
 ├── plans/                       # Field-kit program: GOALS.md + PLAN.md (probe results inside)
 ├── session-logs/                # Cross-tool session logs (Cursor, Droid, Copilot, Claude Code)

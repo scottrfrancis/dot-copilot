@@ -1,0 +1,50 @@
+#!/usr/bin/env bash
+# pre-push — ADVISORY identity check before pushing. Non-blocking.
+#
+# Runs the deterministic entity scanner over the commits about to be pushed and
+# prints any NEW entity-like names (client/host/person candidates) not yet in your
+# allowlist or scrublist. It never blocks the push — it reminds you to triage.
+#
+# Enable it one of two ways:
+#   Per repo:   ln -sf "$(pwd)/bin/pre-push" .git/hooks/pre-push
+#   All repos:  mkdir -p ~/.config/git-hooks && ln -sf /Volumes/workspace/dot-copilot/bin/pre-push ~/.config/git-hooks/pre-push
+#               git config --global core.hooksPath ~/.config/git-hooks
+#
+# To also fail the push on novel entities (strict CI-style gate), set
+#   FIELD_KIT_ADVISORY_STRICT=1
+set -u
+
+# locate the scanner relative to this hook (works via symlink too)
+SELF="$(cd "$(dirname "$(readlink "${BASH_SOURCE[0]}" || echo "${BASH_SOURCE[0]}")")" 2>/dev/null && pwd)"
+SCANNER="${SELF}/entity-advisory.py"
+[ -f "$SCANNER" ] || SCANNER="/Volumes/workspace/dot-copilot/bin/entity-advisory.py"
+[ -f "$SCANNER" ] || { echo "pre-push: entity-advisory.py not found; skipping advisory" >&2; exit 0; }
+PY="$(command -v python3 || command -v python)"
+[ -n "$PY" ] || exit 0
+
+STRICT_FLAG=""
+[ "${FIELD_KIT_ADVISORY_STRICT:-0}" = "1" ] && STRICT_FLAG="--strict"
+
+# git feeds pre-push "<local ref> <local sha> <remote ref> <remote sha>" on stdin.
+# Scan each pushed range; fall back to the default-branch range if stdin is empty.
+RC=0
+FED=0
+while read -r _localref localsha _remoteref remotesha; do
+  FED=1
+  # deletion push (all-zero local sha) — nothing to scan
+  case "$localsha" in *[!0]*) : ;; *) continue ;; esac
+  case "$remotesha" in
+    *[!0]*) RANGE="${remotesha}..${localsha}" ;;   # existing remote → new commits only
+    *)      RANGE="${localsha}" ;;                  # new branch → whole history diff
+  esac
+  echo "── identity advisory: ${RANGE} ──"
+  "$PY" "$SCANNER" --range "$RANGE" $STRICT_FLAG || RC=$?
+done
+
+if [ "$FED" = "0" ]; then
+  "$PY" "$SCANNER" $STRICT_FLAG || RC=$?
+fi
+
+# advisory: swallow the exit code unless strict mode asked to block
+[ -n "$STRICT_FLAG" ] && exit "$RC"
+exit 0
