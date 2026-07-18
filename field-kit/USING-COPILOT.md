@@ -1,0 +1,155 @@
+# Using Copilot with a Claude Bias — operator guide for this kit
+
+Written for one operator: fluent in Claude Code, ritual-driven, now working on a
+locked-down box where **Copilot in VS Code (Auto-only) is the entire toolchain**.
+This maps *your actual habits* — observed across ~180 of your session logs — to
+their Copilot equivalents in this kit, and is honest about what doesn't port.
+
+Keep open next to `RUNBOOK.md`. The mechanical reference is `docs/concept-mapping.md`
+in the dot-copilot repo; this doc is about *operating*, not configuration.
+
+## The one-paragraph mental shift
+
+Claude Code is a CLI agent you steer with slash commands, global config, and hooks
+that fire automatically. Copilot is a chat sidebar with per-repo config and **no
+global anything**: instructions auto-apply by glob, and nothing runs at session
+start unless *you* invoke it. Your rituals all still work — but each becomes a
+deliberate first move instead of an ambient default. The discipline you already have
+is the port; the kit supplies the tooling.
+
+## Commands vs. modes — your `/slash` muscle memory is correct
+
+Copilot has two customization primitives, and they are NOT the same:
+
+- **Prompt files = runnable commands.** Type `/lets-go`, `/handoff`, `/recover` in
+  the Chat box, add arguments as plain text after the name, press Enter — it runs
+  once, inline, in the chat you're already in. **This kit ships every ritual as a
+  prompt file**, so your `/doc-review`-style muscle memory works unchanged.
+- **Chat modes = a persona you switch INTO** (the dropdown next to Ask/Edit/Agent).
+  You don't run a mode; you *become* it and converse until you switch back. This kit
+  ships **zero** custom modes on purpose — modes break the plan→do→check→act loop by
+  forcing a context switch, and none of these rituals are atomic/safety-critical
+  enough to justify one.
+
+Rule: **something you run → `/command`. Something you become → a mode.** Here it's
+all commands. If a `/name` doesn't autocomplete, the prompts folder didn't get
+copied into `.github/prompts/` (BOOTSTRAP step 4).
+
+## Your session lifecycle, ported
+
+| Your Claude habit | On this box | What changed |
+|---|---|---|
+| `/lets-go [role]` opens every session | Type **`/lets-go`** in Chat (add a role: `/lets-go docs`) | No SessionStart hook fires for you — the git-sync + handoff-load only happens when you run it. It also surfaces yesterday's tokometer report. |
+| `/session-logger [topic]` closes substantive sessions | **`/session-logger`** → writes to `session-logs/` | Same format, same YAML frontmatter (`tool: copilot`), cross-tool readable — a log written here picks up in Claude Code at home. |
+| `/handoff` + next-day `/pickup` | **`/handoff`**; next session, `/lets-go` loads it | Identical file format. Your carry-forward-blockers habit works unchanged — but only if the handoff actually gets written, so keep the closing ritual sacred. (No `/pickup` prompt yet — `/lets-go` does the load.) |
+| `b start` / `b stop` time tracking | **Not on this box** — `b` isn't installed | Your session-logger timestamps are the fallback time record. |
+| `/autocommit [-y] [-t type]` | **`/autocommit`** (args after the name) | Same Conventional Commits behavior. PRs: same draft-and-you-merge gate you already keep. |
+
+## What does NOT port — and what replaces it
+
+- **Parallel subagent fan-out.** Your biggest capability loss. There is no Task/agent
+  spawning; one chat, one thread of work. Replace breadth-in-parallel with
+  breadth-in-sequence: separate chats per research thread (fresh chat per topic is
+  also a routing win), and schedule long autonomous sweeps **off-peak** where the
+  capacity data says they succeed.
+- **Plan mode.** No enforced read-only exploration. Approximate it verbally — "plan
+  only, list the files you'd touch, wait for my go" — which doubles as a
+  complexity signal to the Auto router (see below). The approval gate is you.
+- **Global `~/.claude` config.** Nothing follows you between repos automatically.
+  This kit's `copilot/` payload must be copied into each project's `.github/`
+  (BOOTSTRAP step 4). One copy per project, updates by re-copy.
+- **MEMORY.md / auto-memory.** Nothing is auto-loaded across sessions except
+  `.github/copilot-instructions.md`. Your reusable-insights habit ports as: put
+  durable, always-true lessons into the project's `copilot-instructions.md`;
+  put session-scoped state into the handoff. Nothing else survives.
+- **Hooks as a safety net.** Claude's Stop-hook nagged you to log sessions. Here
+  the end-of-session ritual (session-logger → handoff → harvest → report, per
+  RUNBOOK) runs on your discipline alone. Put it somewhere you'll see it.
+
+## Working WITH the Auto router (your model picker is gone)
+
+At home you choose the model and effort; here the router reads your prompt and
+chooses for you. Two of your existing habits are, unmodified, the optimal play:
+
+- **Your TDD/red-first doctrine is a router win.** "Write the failing test for X
+  covering these edge cases, then implement to green, then run the full suite"
+  is exactly the file-naming, constraint-stating, plan-shaped prompt that scores
+  as complex and pulls the strong tier. Keep working the way you work.
+- **Your skeptical re-verification pass matters MORE here.** At home you audit
+  agent output on principle; here the answer may have come from the cheap tier
+  without warning. Hover-check the model on any answer you're about to trust,
+  and downgrade your trust before you downgrade your prompt.
+
+What NOT to do when output degrades: your instinct at home is `/compact` or a
+sharper reprompt. Here, **never simplify or fragment the ask** — that reads as
+an easier task and routes you further down. The full doctrine is in the
+`copilot-auto-tactics` and `context-hygiene` instructions (they auto-apply);
+the failure-triage table is the **`/recover`** command.
+
+## The habits this box adds (not in your Claude repertoire)
+
+1. **Hover the response** when quality shifts — model identity is data, and the
+   harness logs it; your job is just to notice.
+2. **`/observe`** (or the `observe` shell cmd) the moment something happens: `observe --stall`,
+   `observe --continue-prompt`, `observe 4 "note"` — ten seconds, from Git Bash.
+   These are the only signals the logs can't capture.
+3. **Harvest + report at session end** (RUNBOOK): the data answers "was it me,
+   the router, quota, or the laptop" so you stop guessing.
+4. **Half-full context = handoff → clear → pickup.** You already run this cycle
+   by instinct; here it's also OOM prevention, so run it *earlier* than feels
+  necessary.
+
+## The Keep button (and how to retire it)
+
+Agent-mode edits sit in a pending state until you click **Keep** — per file, over
+and over. Claude Code's accept-edits mode has no Copilot twin in the UI, but the
+settings get you most of the way (your `settings.json` is writable — verified):
+
+```jsonc
+// user settings.json
+"chat.editing.autoAcceptDelay": 10,   // seconds; pending edits auto-Keep after a
+                                      // countdown ring on the button. 0 = off.
+```
+
+Pick the delay by trust level: `5` is close to Claude's accept-edits mode, `30`
+leaves a real veto window mid-run. (Setting names have drifted across VS Code
+versions — if that key doesn't light up on this build, search Settings for
+**"auto accept"** in the Chat section; on 1.129 it's there.)
+
+Two companions that make auto-accept safe *for you*:
+
+- **Git is your actual review gate, not the Keep button.** You already review
+  diffs before committing — auto-Keep changes nothing about that. Keep the habit:
+  checkpoint before a long agent run (`/checkpoint-progress` or a WIP
+  commit), then `git diff` judges the run afterward, exactly like at home.
+- **Terminal approvals are a separate nag** with a separate fix: search Settings
+  for **"auto approve"** (`chat.tools.terminal.autoApprove`) and allow-list the
+  narrow, read-only, test-running set — e.g. `pytest`, `git status/diff/log`,
+  your build command. On this client's box, keep the list tight and never
+  blanket-approve; WDAC audits what runs, and so should you.
+
+What NOT to auto-approve even so: anything that leaves the machine or touches
+prod-shaped state. That stays on the draft-and-you-send rule you already live by.
+
+## Known frictions, translated from your Claude logs
+
+- Your recurring "sandbox blocks git-over-SSH" annoyance doesn't exist here —
+  there's no remote at all. Everything is local; the bundle IS the transfer.
+- Your auto-mode-classifier frustration (repeated approval round-trips) maps to
+  Copilot's tool-approval prompts in agent mode. Same mitigation you wanted at
+  home: batch intent up front — state in the prompt what the agent may run
+  ("you may run the test suite and edit files under src/") to reduce mid-run
+  stops, and raise `chat.agent.maxRequests` if the benign continue-prompt nags.
+- Every tool gotcha you'd normally save as a Reusable Insight: the durable ones
+  go in the project's `copilot-instructions.md`, the box-specific ones in
+  `PROBE-RESULTS.md` — both travel back to home base at re-bundle time.
+
+## Ten-second card
+
+```
+open   : /lets-go            close  : /session-logger → /handoff → harvest.sh → /report
+stall  : /recover            felt it: observe 1-5 / --stall / --continue-prompt
+degrade: fresh chat, FULL altitude — never fragment      hover: check the model
+keep-nag: chat.editing.autoAcceptDelay=10   terminal-nag: chat.tools.terminal.autoApprove
+weekly : report --weekly Monday   after VS Code update: log level back to Trace
+```

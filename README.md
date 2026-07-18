@@ -1,6 +1,6 @@
 # dot-copilot
 
-Portable GitHub Copilot configuration — the Copilot equivalent of `~/.claude/`. Provides consistent guidelines, agents, and hooks across all projects via symlinks.
+Portable GitHub Copilot configuration — the Copilot equivalent of `~/.claude/`. Provides consistent guidelines, runnable /commands, and hooks across all projects via symlinks.
 
 ## Quick Start
 
@@ -11,19 +11,19 @@ Portable GitHub Copilot configuration — the Copilot equivalent of `~/.claude/`
 # This creates symlinks in .github/:
 #   .github/copilot-instructions.md -> copilot/copilot-instructions.md
 #   .github/instructions/           -> copilot/instructions/
-#   .github/agents/                 -> copilot/agents/
+#   .github/prompts/                -> copilot/prompts/
 #   .github/hooks/                  -> copilot/hooks/
 ```
 
 ## How It Works
 
-This repository is a **base class** for Copilot configuration. It contains reusable instructions, agents, and hooks that get symlinked into each project's `.github/` directory. Updates here propagate automatically to all linked projects.
+This repository is a **base class** for Copilot configuration. It contains reusable instructions, prompt-file commands, and hooks that get symlinked into each project's `.github/` directory. Updates here propagate automatically to all linked projects.
 
 ```
 dot-copilot/copilot/          Target project/.github/
 ├── copilot-instructions.md  ←──  copilot-instructions.md (symlink)
 ├── instructions/            ←──  instructions/ (symlink)
-├── agents/                  ←──  agents/ (symlink)
+├── prompts/                 ←──  prompts/ (symlink)
 └── hooks/                   ←──  hooks/ (symlink)
 ```
 
@@ -32,11 +32,11 @@ dot-copilot/copilot/          Target project/.github/
 To customize any component for a specific project, replace the symlink with a real file:
 
 ```bash
-# Replace the symlinked agents directory with a project-specific one
-rm .github/agents
-cp -r /Volumes/workspace/dot-copilot/copilot/agents .github/agents
+# Replace the symlinked prompts directory with a project-specific one
+rm .github/prompts
+cp -r /Volumes/workspace/dot-copilot/copilot/prompts .github/prompts
 
-# Now edit .github/agents/lets-go.md for project-specific behavior
+# Now edit .github/prompts/lets-go.prompt.md for project-specific behavior
 ```
 
 The base config knows nothing about any specific project — projects extend it.
@@ -52,6 +52,8 @@ Auto-applied by Copilot based on `applyTo` glob patterns in YAML frontmatter.
 | Instruction | Purpose |
 |---|---|
 | [conventional-commits](copilot/instructions/conventional-commits.instructions.md) | Standardized `type(scope): description` commit format |
+| [copilot-auto-tactics](copilot/instructions/copilot-auto-tactics.instructions.md) | Auto-router tactics: signal complexity, plan before tools, never fragment a failing ask |
+| [context-hygiene](copilot/instructions/context-hygiene.instructions.md) | Handoff→clear→pickup at half context; small per-turn payloads; OOM-aware habits |
 | [karpathy-principles](copilot/instructions/karpathy-principles.instructions.md) | Surface assumptions before implementing; match existing style |
 | [prototype-hygiene](copilot/instructions/prototype-hygiene.instructions.md) | Config over code; docs describe current state; PRs over branches |
 | [session-safety](copilot/instructions/session-safety.instructions.md) | Prevent session hangs on hardware/NPU/GPU systems |
@@ -64,6 +66,11 @@ Auto-applied by Copilot based on `applyTo` glob patterns in YAML frontmatter.
 | [ai-patterns](copilot/instructions/ai-patterns.instructions.md) | `*.py`, `*.ts`, `*.js` | LLM integration patterns |
 | [C4-diagramming](copilot/instructions/C4-diagramming.instructions.md) | `*.puml`, `*.plantuml` | C4 Model PlantUML organization |
 | [golang](copilot/instructions/golang.instructions.md) | `*.go`, `go.mod`, `go.sum` | Go JSON safety, gosec patterns, G104 triage |
+| [python](copilot/instructions/python.instructions.md) | `*.py`, `pyproject.toml` | Type hints, error handling, testing patterns |
+| [typescript](copilot/instructions/typescript.instructions.md) | `*.ts`, `*.tsx` | TypeScript standards |
+| [docker](copilot/instructions/docker.instructions.md) | `Dockerfile*`, `compose*.yml` | Dockerfile / compose authoring standards |
+| [terraform](copilot/instructions/terraform.instructions.md) | `*.tf`, `*.tfvars` | Terraform standards |
+| [git-workflow](copilot/instructions/git-workflow.instructions.md) | `**` | Branch + PR discipline; never commit/push to main; stacked-PR handling |
 | [markdown-formatting](copilot/instructions/markdown-formatting.instructions.md) | `*.md`, `*.mdx` | Spacing and formatting standards |
 | [prose-style](copilot/instructions/prose-style.instructions.md) | `*.md`, `*.mdx` | Anti-AI-smell rules for narrative prose |
 | [readme-documentation](copilot/instructions/readme-documentation.instructions.md) | `*.md` | README as central documentation hub |
@@ -75,27 +82,55 @@ Auto-applied by Copilot based on `applyTo` glob patterns in YAML frontmatter.
 
 | Instruction | Applies To | Purpose |
 |---|---|---|
+| [adr](copilot/instructions/adr.instructions.md) | `docs/decisions/**`, `docs/adr/**`, `ADR-*.md` | Canonical ADR format: location, numbering, status lifecycle, traceability links |
 | [ci-local-parity](copilot/instructions/ci-local-parity.instructions.md) | `.github/workflows/**` | Run every CI command locally before pushing |
 | [docx-conversion](copilot/instructions/docx-conversion.instructions.md) | `*.py`, `md-to-docx*` | python-docx over pandoc; color, typography, hyperlinks |
 | [md2pdf](copilot/instructions/md2pdf.instructions.md) | md2pdf workflows | Markdown → PDF conversion workflow |
 | [pr-token-tracking](copilot/instructions/pr-token-tracking.instructions.md) | PR creation | Include AI token usage in PR descriptions |
 | [project-setup](copilot/instructions/project-setup.instructions.md) | config files | Tiered project bootstrapping checklist |
 
-### Agents (Custom Agents)
+### Prompts (Runnable Commands)
 
-Invoked from the Copilot agent dropdown. Ported from Claude Code commands.
+Invoked by typing **`/name`** in the Copilot Chat box (arguments follow the name),
+the same run-it-and-go gesture as a Claude Code slash-command. Ported from
+`~/.claude/commands/`. These are prompt files, **not** chat modes — nothing here is
+a dropdown persona you switch into; the kit ships no custom modes by design.
 
-| Agent | Purpose |
+| Command | Purpose |
 |---|---|
-| [lets-go](copilot/agents/lets-go.md) | Session initialization with git sync protocol |
-| [session-logger](copilot/agents/session-logger.md) | Session summary with effectiveness assessment |
-| [handoff](copilot/agents/handoff.md) | Continuation prompt for next session |
-| [mine-sessions](copilot/agents/mine-sessions.md) | Analyze session logs for patterns and metrics |
-| [arch-review](copilot/agents/arch-review.md) | Principal Architect review against industry frameworks |
-| [autocommit](copilot/agents/autocommit.md) | AI-powered conventional commit message generation |
-| [checkpoint-progress](copilot/agents/checkpoint-progress.md) | WIP commit and session state preservation |
-| [review-pr](copilot/agents/review-pr.md) | PR code review: bugs, security, missing tests, style |
-| [babysit-pr](copilot/agents/babysit-pr.md) | Monitor a PR for checks, reviews, and merge readiness |
+| [/lets-go](copilot/prompts/lets-go.prompt.md) | Session initialization with git sync protocol |
+| [/session-logger](copilot/prompts/session-logger.prompt.md) | Session summary with effectiveness assessment |
+| [/handoff](copilot/prompts/handoff.prompt.md) | Continuation prompt for next session |
+| [/mine-sessions](copilot/prompts/mine-sessions.prompt.md) | Analyze session logs for patterns and metrics |
+| [/arch-review](copilot/prompts/arch-review.prompt.md) | Principal Architect review against industry frameworks |
+| [/autocommit](copilot/prompts/autocommit.prompt.md) | AI-powered conventional commit message generation |
+| [/checkpoint-progress](copilot/prompts/checkpoint-progress.prompt.md) | WIP commit and session state preservation |
+| [/review-pr](copilot/prompts/review-pr.prompt.md) | PR code review: bugs, security, missing tests, style |
+| [/babysit-pr](copilot/prompts/babysit-pr.prompt.md) | Monitor a PR for checks, reviews, and merge readiness |
+| [/recover](copilot/prompts/recover.prompt.md) | Diagnose a Copilot stall/error by mechanism, apply the matching fix, log it |
+| [/observe](copilot/prompts/observe.prompt.md) | Record a manual quality/stall/continue observation (tokometer field kit) |
+| [/report](copilot/prompts/report.prompt.md) | Run the Copilot daily/weekly strategy report and summarize what changed |
+| [/explain-diff-md](copilot/prompts/explain-diff-md.prompt.md), [/explain-diff-html](copilot/prompts/explain-diff-html.prompt.md) | Rich explanation of a diff/branch/PR as a self-contained doc |
+
+**Spec-Driven Development (SDLC)** — ported from the airgapped engagement fork (generic; domain examples scrubbed):
+
+| Command | Purpose |
+|---|---|
+| [/discovery-init](copilot/prompts/discovery-init.prompt.md) | Scaffold an SDD project: artifact templates, glossary, constitution, traceability chain |
+| [/interview-to-spec](copilot/prompts/interview-to-spec.prompt.md) | Interview notes → readout, FR-### requirements, Gherkin scenarios, tracker updates |
+| [/design-review](copilot/prompts/design-review.prompt.md) | Review D2.x design docs for consistency, terminology, cross-reference integrity |
+| [/trace-check](copilot/prompts/trace-check.prompt.md) | Validate bidirectional traceability across requirements, feature files, scenarios, tests |
+| [/constitution](copilot/prompts/constitution.prompt.md) | Generate CONSTITUTION.md + WORKFLOWS.md (principles, Definition of Done, quality gates) |
+| [/assumptions](copilot/prompts/assumptions.prompt.md) | Track hypothesis-driven assumptions (if-true/if-false/fallback) in ASSUMPTIONS-TRACKER.md |
+| [/gherkin](copilot/prompts/gherkin.prompt.md) | Draft Gherkin acceptance scenarios from a requirement or FR-### |
+| [/adr](copilot/prompts/adr.prompt.md) | Write an ADR in the canonical format — from a described decision or extracted from a session log |
+| [/scrub-check](copilot/prompts/scrub-check.prompt.md) | Advisory review of about-to-push changes for proper nouns/identifiers that may need scrubbing (context-aware complement to `bin/entity-advisory.py`) |
+
+The `/recover`, `/observe`, `/report` commands pair with the **tokometer field kit** — the
+Copilot-in-VS-Code collectors and reports in the [tokometer](https://github.com/scottrfrancis/coder)
+repo — built for locked-down machines where Copilot (Auto-only) is the sole assistant.
+They degrade gracefully when the kit isn't installed. See `plans/GOALS.md` / `plans/PLAN.md`
+for the field-kit program.
 
 ### Hooks
 
@@ -114,14 +149,18 @@ dot-copilot/
 ├── CLAUDE.md                    # For developing this project with Claude Code
 ├── install.sh                   # Symlink installer
 ├── bin/
-│   └── sync-from-dot-claude.sh  # Propagate ~/.claude/guidelines/ edits to copilot/instructions/
+│   ├── make-field-bundle.sh     # Assemble the email-transferable field kit (zip → b64 chunks)
+│   ├── entity-advisory.py       # Pre-push ADVISORY: flag new entity-like names to triage
+│   └── pre-push                 # Git hook that runs the advisory (symlink into .git/hooks or core.hooksPath)
+├── field-kit/                   # Locked-down-laptop kit: probe, BOOTSTRAP/RUNBOOK, installer
+├── plans/                       # Field-kit program: GOALS.md + PLAN.md (probe results inside)
 ├── session-logs/                # Cross-tool session logs (Cursor, Droid, Copilot, Claude Code)
 ├── .claude/                     # Claude Code project setup (Tier 1)
 │   └── memory/MEMORY.md
 ├── copilot/                     # THE DELIVERABLE — portable Copilot config
 │   ├── copilot-instructions.md  # Global behavioral rules
 │   ├── instructions/            # Path-scoped guidelines (18 files)
-│   ├── agents/                  # Custom agents (9 files)
+│   ├── prompts/                 # Runnable /commands (14 files)
 │   └── hooks/                   # Hook config + scripts
 │       ├── session-lifecycle.json
 │       └── scripts/
@@ -132,37 +171,27 @@ dot-copilot/
 
 ## Self-contained by design
 
-`copilot/` contains all the content shipped by this repo. A Copilot-only user can clone dot-copilot and run `./install.sh /path/to/project` with no external dependencies — no `~/.claude/` checkout required. The installer uses symlinks by default, so updates in this repo propagate automatically to every linked project.
+`copilot/` contains all the content shipped by this repo — it is **self-contained and authoritative**. Clone dot-copilot and run `./install.sh /path/to/project` with **no external dependencies**: no `~/.claude/`, no `dot-claude` checkout, nothing fetched at install or runtime. The installer uses symlinks by default, so updates in this repo propagate automatically to every linked project.
 
-## Syncing edits from dot-claude
-
-If you author rule content in [`~/.claude/guidelines/`](https://github.com/scottrfrancis/dot-claude) and want to propagate edits into this repo's instructions:
-
-```bash
-./bin/sync-from-dot-claude.sh --dry-run   # preview which instructions would change
-./bin/sync-from-dot-claude.sh             # apply — writes bodies into copilot/instructions/
-git diff copilot/instructions/            # review before committing
-```
-
-The sync script preserves each instruction's existing frontmatter (`description:` and `applyTo:`) and replaces only the body. New guidelines with no matching instruction are reported as warnings; create the instruction file manually first with an appropriate `applyTo:` glob before re-running.
+Author and edit rule content **here**, in `copilot/instructions/` and `copilot/prompts/`. This repo is not a downstream mirror of any other — there is no upstream to sync from. (Content is periodically *shared* across sibling config repos — dot-claude, dot-cursor, dot-droid, dot-opencode — but that is a manual, bidirectional harvest, not a build-time dependency in any direction.)
 
 ## Origin
 
-This configuration is ported from a `~/.claude/` setup for Claude Code. See [docs/concept-mapping.md](docs/concept-mapping.md) for the full mapping between the two systems and [docs/limitations.md](docs/limitations.md) for what couldn't be ported.
+The format is modeled on a `~/.claude/` Claude Code setup; the `~/.claude/` names in [docs/concept-mapping.md](docs/concept-mapping.md) are a conceptual equivalence for readers coming from Claude Code, not a runtime link. See [docs/limitations.md](docs/limitations.md) for what Copilot can't express.
 
 ## Session Lifecycle
 
-The agents and hooks implement a session lifecycle pattern:
+The commands and hooks implement a session lifecycle pattern:
 
 ```
 [sessionStart hook] → auto-inject handoff context
   ↓
-lets-go agent → sync git, load docs, verify context
+/lets-go → sync git, load docs, verify context
   ↓
 [work]
   ↓
 [sessionEnd hook] → remind about logging
   ↓
-session-logger agent → capture outcomes
-handoff agent → generate continuation prompt
+/session-logger → capture outcomes
+/handoff → generate continuation prompt
 ```

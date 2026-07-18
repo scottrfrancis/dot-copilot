@@ -1,10 +1,11 @@
 ---
-name: "babysit-pr"
 description: "Monitor a PR for check results, reviews, and merge readiness. Pass a PR number or omit for current branch."
+mode: agent
 tools: ["executeCommand", "readFile"]
 ---
-
 # Monitor PR Status
+
+**Arguments (optional):** a PR number (`/babysit-pr 42`); omit to use the current branch's PR.
 
 Monitor a pull request and report status changes.
 

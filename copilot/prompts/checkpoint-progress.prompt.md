@@ -1,9 +1,8 @@
 ---
-name: "checkpoint-progress"
 description: "Create WIP commit and log session state for context preservation"
+mode: agent
 tools: ["executeCommand", "readFile", "editFile", "listDirectory"]
 ---
-
 # Progress Checkpointing
 
 Automatically save work state to prevent context loss. Creates a WIP commit and logs session state.

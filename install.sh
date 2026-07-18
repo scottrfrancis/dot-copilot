@@ -113,8 +113,8 @@ link_file "${SOURCE_DIR}/copilot-instructions.md" "${GITHUB_DIR}/copilot-instruc
 # instructions/ -> .github/instructions/
 link_directory "${SOURCE_DIR}/instructions" "${GITHUB_DIR}/instructions"
 
-# agents/ -> .github/agents/
-link_directory "${SOURCE_DIR}/agents" "${GITHUB_DIR}/agents"
+# prompts/ -> .github/prompts/   (runnable /slash-commands in Copilot Chat)
+link_directory "${SOURCE_DIR}/prompts" "${GITHUB_DIR}/prompts"
 
 # hooks/ -> .github/hooks/
 link_directory "${SOURCE_DIR}/hooks" "${GITHUB_DIR}/hooks"
@@ -144,7 +144,7 @@ echo ""
 echo "Linked components:"
 echo "  .github/copilot-instructions.md  -> copilot/copilot-instructions.md"
 echo "  .github/instructions/            -> copilot/instructions/"
-echo "  .github/agents/                  -> copilot/agents/"
+echo "  .github/prompts/                 -> copilot/prompts/  (run as /name in chat)"
 echo "  .github/hooks/                   -> copilot/hooks/"
 echo ""
 echo "To override any component for this project, replace the"

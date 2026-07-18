@@ -1,10 +1,11 @@
 ---
-name: "autocommit"
 description: "Analyze changes and generate conventional commit message with AI"
+mode: agent
 tools: ["executeCommand", "readFile", "searchFiles"]
 ---
-
 # Auto-Commit with Conventional Commits
+
+**Arguments (optional):** `-y` to skip confirmation, `-t <type>` to force a conventional-commit type (e.g. `/autocommit -t fix`).
 
 Analyze the current git changes and generate a commit message following the Conventional Commits specification.
 

@@ -1,0 +1,34 @@
+# field-kit.scrublist — identity scrub patterns for the field-kit bundle gate.
+#
+# Copy this to  ~/.config/field-kit.scrublist  and fill in real values.
+# NEVER commit the filled-in copy — it holds the very identifiers you're hiding.
+# (This .example ships only placeholders, so it is safe in git.)
+#
+# How it works: bin/make-field-bundle.sh greps the staged bundle against every
+# non-comment line here (case-insensitive regex). Any match ABORTS the build, so
+# no client/employer/host identifier can ride out in the emailed .ps1.
+#
+# One pattern per line. Blank lines and #-comments are ignored. Keep patterns
+# SPECIFIC — a bare common word (e.g. a first name) will false-positive; prefer
+# full names, domains, and distinctive codenames.
+
+# ── Client / engagement ─────────────────────────────────────────────
+<client-legal-name>
+<client-short-name>
+<client-internal-domain.com>
+<project-or-product-codename>
+
+# ── Employer / consultancy ──────────────────────────────────────────
+<employer-name>
+<employer-domain.com>
+<internal-marketplace-or-tooling-name>
+
+# ── Target machine (from msinfo32 / whoami) ─────────────────────────
+<hostname>
+<ad-domain>
+<windows-username>
+
+# ── Domain fingerprints (jargon that identifies the problem space) ──
+# e.g. product names, internal system acronyms, approval-process names
+<internal-system-acronym>
+<internal-approval-process>

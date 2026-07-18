@@ -1,10 +1,11 @@
 ---
-name: "lets-go"
 description: "Session initialization with git sync protocol, project overview, and context loading"
+mode: agent
 tools: ["executeCommand", "readFile", "searchFiles", "editFile", "listDirectory"]
 ---
-
 # Session Initialization
+
+**Arguments (optional):** text after `/lets-go` is the session role/focus (e.g. `/lets-go docs`). Use it to bias the overview and suggested next steps.
 
 Set initial context for a working session.
 
@@ -93,6 +94,21 @@ Run these checks in order:
    - If dirty + behind: warn "Uncommitted changes AND behind origin — stash first, then pull"
    - If clean + behind: offer to pull automatically
 7. If on default branch (main/master) with uncommitted changes: suggest creating a feature branch
+
+## Yesterday's Copilot Report (field-kit machines)
+
+If the tokometer field kit is installed (`~/.tokometer/report_copilot.py` exists),
+surface yesterday's picture before planning today:
+
+```bash
+ls -t ~/.tokometer/reports/copilot-*.md 2>/dev/null | head -1
+```
+
+If a report exists, read it and fold ONE line into the ready output: dominant model,
+failure count, and the best/worst hours — e.g. "Yesterday: codex-dominant until 11am,
+Haiku after 2pm; 2 stalls (1 crash-triggered). Schedule heavy work early." If the
+newest report is older than 2 days, remind: run the `report` agent (or check that
+the chat log level is still Trace). Skip silently when the kit isn't installed.
 
 ## Ready Output
 

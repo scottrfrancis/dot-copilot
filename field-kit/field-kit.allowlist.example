@@ -1,0 +1,26 @@
+# field-kit.allowlist — known-SAFE entity names (advisory silencer).
+#
+# Copy to  ~/.config/field-kit.allowlist  and add your own safe names.
+# The entity-advisory scanner (bin/entity-advisory.py) already silences a large
+# built-in tech vocabulary (GitHub, Python, Docker, your own OSS project names, …).
+# Add here the safe proper nouns SPECIFIC TO YOU that would otherwise show up as
+# "new" on every push — your name, collaborators, personal domains, public projects.
+#
+# This is the counterpart to the scrublist:
+#   scrublist  = names to BLOCK (client/employer/host identifiers)
+#   allowlist  = names that are SAFE (silence the advisory)
+# Anything in NEITHER list gets flagged for you to triage.
+#
+# One term per line; blank lines and #-comments ignored. Safe to keep local; this
+# .example ships only generic placeholders.
+
+# ── You / your public identity ──────────────────────────────────────
+<your-name>
+<your-github-handle>
+<your-personal-domain.com>
+
+# ── Your public / open-source project names ─────────────────────────
+<your-oss-project>
+
+# ── Frequent collaborators / co-authors (public) ────────────────────
+<collaborator-name>

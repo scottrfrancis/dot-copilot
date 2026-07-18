@@ -11,7 +11,7 @@ This repository contains portable GitHub Copilot configuration files — the Cop
 - `copilot/` — The deliverable: portable Copilot config files
   - `copilot-instructions.md` — Global instructions (symlinked to `.github/copilot-instructions.md`)
   - `instructions/` — Path-scoped guidelines (symlinked to `.github/instructions/`)
-  - `agents/` — Custom agents (symlinked to `.github/agents/`)
+  - `prompts/` — Runnable `/name` commands (symlinked to `.github/prompts/`)
   - `hooks/` — Hook definitions and scripts (symlinked to `.github/hooks/`)
 - `install.sh` — Symlink installer for target projects
 - `docs/` — Mapping documentation and known limitations
@@ -24,17 +24,17 @@ Each file in `copilot/` has a 1:1 mapping to a Claude Code equivalent:
 |---|---|
 | `copilot/copilot-instructions.md` | `~/.claude/CLAUDE.md` |
 | `copilot/instructions/*.instructions.md` | `~/.claude/guidelines/*.md` |
-| `copilot/agents/*.md` | `~/.claude/commands/*.md` |
+| `copilot/prompts/*.prompt.md` | `~/.claude/commands/*.md` |
 | `copilot/hooks/` | `~/.claude/hooks/` + `settings.json` |
 
 ## Development Guidelines
 
-This repository is standalone and **does not require Claude Code or `~/.claude/` to be installed**. All dev-workflow rules below have local copies in `copilot/instructions/`. The `~/.claude/` paths are listed as optional fallbacks when Claude Code is available on the same machine.
+This repository is **fully self-contained**. It **does not require Claude Code, a local `dot-claude` checkout, or `~/.claude/` to be installed** — at authoring time or runtime. `copilot/` holds the complete, authoritative content; nothing is fetched from or synced out of `~/.claude/`. The `~/.claude/` names in the mapping table above are a *conceptual* Claude-Code equivalence for readers familiar with that setup, not a dependency.
 
-- Follow `copilot/instructions/conventional-commits.instructions.md` (fallback: `~/.claude/guidelines/conventional-commits.md`) for commit messages
-- Follow `copilot/instructions/shell-scripts.instructions.md` (fallback: `~/.claude/guidelines/shell-scripts.md`) for any bash scripts
-- Follow `copilot/instructions/readme-documentation.instructions.md` (fallback: `~/.claude/guidelines/readme-documentation.md`) for documentation
-- When porting content from `~/.claude/` (only if installed), preserve the intent and structure while adapting syntax to Copilot's format
+- Follow `copilot/instructions/conventional-commits.instructions.md` for commit messages
+- Follow `copilot/instructions/shell-scripts.instructions.md` for any bash scripts
+- Follow `copilot/instructions/readme-documentation.instructions.md` for documentation
+- `copilot/` is the source of truth. Edit content here directly; do not treat any other repo as upstream.
 - Instructions files use YAML frontmatter with `applyTo` glob patterns
 - Agent files use YAML frontmatter with `name`, `description`, and `tools` arrays
 
