@@ -60,9 +60,11 @@ cp "$REPO_DIR/field-kit/tokometer.env" "$KIT/tokometer/tokometer.env"
 
 echo "==> identity scrub gate"
 if [ -f "$SCRUBLIST" ]; then
-  HITS=0
+  HITS=0; NPAT=0
   while IFS= read -r pattern; do
-    [ -z "$pattern" ] && continue
+    # skip blank lines and # comments so the scrublist can be self-documenting
+    case "$pattern" in ""|"#"*) continue ;; esac
+    NPAT=$((NPAT + 1))
     if grep -riIl -- "$pattern" "$KIT" >/dev/null 2>&1; then
       echo "SCRUB HIT: pattern '$pattern' found in:" >&2
       grep -riIl -- "$pattern" "$KIT" >&2
@@ -70,7 +72,7 @@ if [ -f "$SCRUBLIST" ]; then
     fi
   done < "$SCRUBLIST"
   [ "$HITS" = "0" ] || { echo "make-field-bundle: ABORTED — scrub the files above" >&2; exit 2; }
-  echo "    clean against $(wc -l < "$SCRUBLIST" | tr -d ' ') pattern(s)"
+  echo "    clean against $NPAT pattern(s)"
 else
   echo "    WARNING: no scrublist at $SCRUBLIST — identity gate SKIPPED" >&2
 fi
