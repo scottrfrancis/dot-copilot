@@ -58,6 +58,13 @@ cp "$REPO_DIR/field-kit/probe.py" "$REPO_DIR/field-kit/PROBE-RESULTS.md" \
 cp "$REPO_DIR/field-kit/BOOTSTRAP.md" "$KIT/"      # reference copy inside the zip too
 cp "$REPO_DIR/field-kit/tokometer.env" "$KIT/tokometer/tokometer.env"
 
+# optional extra payload (e.g. the pattern library) — set PATTERNS_PAYLOAD to a dir to
+# fold it into the bundle under patterns/. Used by make-xom-export.sh.
+if [ -n "${PATTERNS_PAYLOAD:-}" ] && [ -d "${PATTERNS_PAYLOAD}" ]; then
+  cp -R "$PATTERNS_PAYLOAD" "$KIT/patterns"
+  echo "    + folded pattern-library payload into patterns/"
+fi
+
 echo "==> identity scrub gate"
 if [ -f "$SCRUBLIST" ]; then
   HITS=0; NPAT=0
