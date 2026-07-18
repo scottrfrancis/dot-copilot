@@ -36,6 +36,7 @@ BUNDLE_MANIFEST = [
     "RUNBOOK.md",
     "PROBE-RESULTS.md",
     "USING-COPILOT.md",
+    # patterns/ present only in the combined XOM export (optional)
 ]
 
 
